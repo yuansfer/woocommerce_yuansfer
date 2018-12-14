@@ -1,0 +1,6 @@
+#add_payment_method #payment .payment_method_yuansfer label[for=payment_method_yuansfer] { display: block; padding-left: 20px; }
+#add_payment_method #payment .payment_method_yuansfer_alipay label[for=payment_method_yuansfer_alipay] { display: block; padding-left: 20px; }
+#add_payment_method #payment .payment_method_yuansfer_wechatpay label[for=payment_method_yuansfer_wechatpay] { display: block; padding-left: 20px; }
+#add_payment_method #payment .payment_method_yuansfer_lakalapay label[for=payment_method_yuansfer_lakalapay] { display: block; padding-left: 20px; }
+
+.woocommerce-PaymentMethods li { list-style-type: none; }
