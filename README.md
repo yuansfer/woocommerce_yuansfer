@@ -1,5 +1,6 @@
 === WooCommerce Yuansfer Payment ===
 
+```
 Contributors: flyinghail
 Tags: yuansfer, payment request, unionpay, alipay, wechat pay, lakala pay, woocommerce, automattic
 Requires at least: 4.4
@@ -9,6 +10,7 @@ Stable tag: 4.1.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Attributions: flyinghail-yuansfer
+```
 
 Take payments on your store using Yuansfer.
 
