@@ -2,7 +2,7 @@
 
 ```
 Contributors: flyinghail
-Tags: yuansfer, payment request, unionpay, alipay, wechat pay, lakala pay, woocommerce, automattic
+Tags: yuansfer, payment request, unionpay, alipay, wechat pay, woocommerce, automattic
 Requires at least: 4.4
 Tested up to: 4.9
 Requires PHP: 5.6
@@ -16,13 +16,13 @@ Take payments on your store using Yuansfer.
 
 == Description ==
 
-Accept Union Pay, Alipay, WeChat Pay, Lakala Pay directly on your store with the Yuansfer payment for WooCommerce.
+Accept Union Pay, Alipay, WeChat Pay directly on your store with the Yuansfer payment for WooCommerce.
 
 = Take payments easily and directly on your store =
 
 The Yuansfer plugin extends WooCommerce allowing you to take payments directly on your store via Yuansfer’s API.
 
-Yuansfer is a simple way to accept payments online. With Yuansfer you can accept Union Pay, Alipay, WeChat Pay, Lakala Pay directly on your store.
+Yuansfer is a simple way to accept payments online. With Yuansfer you can accept Union Pay, Alipay, WeChat Pay directly on your store.
 
 = Why choose Yuansfer? =
 
