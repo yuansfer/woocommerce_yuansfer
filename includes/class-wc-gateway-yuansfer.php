@@ -1,5 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
 	exit;
 }
 
@@ -18,8 +18,8 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
 
 		parent::__construct();
 
-        add_action( 'admin_enqueue_yuansfer', array( $this, 'admin_scripts' ) );
-        add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+        add_action('admin_enqueue_yuansfer', array($this, 'admin_scripts'));
+        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 	}
 
 
@@ -29,13 +29,13 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
 	 * @param int $user_id
 	 * @param array $load_address
 	 */
-	public function show_update_card_notice( $user_id, $load_address ) {
-		if ( ! WC_Yuansfer_Payment_Tokens::customer_has_saved_methods( $user_id ) || 'billing' !== $load_address ) {
+	public function show_update_card_notice($user_id, $load_address) {
+		if (!WC_Yuansfer_Payment_Tokens::customer_has_saved_methods($user_id) || 'billing' !== $load_address) {
 			return;
 		}
 
 		/* translators: 1) Opening anchor tag 2) closing anchor tag */
-		wc_add_notice( sprintf( __( 'If your billing address has been changed for saved payment methods, be sure to remove any %1$ssaved payment methods%2$s on file and re-add them.', 'woocommerce-yuansfer' ), '<a href="' . esc_url( wc_get_endpoint_url( 'payment-methods' ) ) . '" class="wc-yuansfer-update-card-notice" style="text-decoration:underline;">', '</a>' ), 'notice' );
+		wc_add_notice(sprintf(__('If your billing address has been changed for saved payment methods, be sure to remove any %1$ssaved payment methods%2$s on file and re-add them.', 'woocommerce-yuansfer'), '<a href="' . esc_url(wc_get_endpoint_url('payment-methods')) . '" class="wc-yuansfer-update-card-notice" style="text-decoration:underline;">', '</a>'), 'notice');
 	}
 
 	/**
@@ -45,19 +45,15 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
 	 */
 	public function get_icon() {
 		$icons = $this->payment_icons();
-
-        $icons_str = '';
-
-        $icons_str .= $icons['unionpay'];
-
-		return apply_filters( 'woocommerce_gateway_icon', $icons_str, $this->id );
+        $icons_str = $icons['unionpay'];
+		return apply_filters('woocommerce_gateway_icon', $icons_str, $this->id);
 	}
 
 	/**
 	 * Initialise Gateway Settings Form Fields
 	 */
 	public function init_form_fields() {
-		$this->form_fields = require( dirname( __FILE__ ) . '/admin/yuansfer-settings.php' );
+		$this->form_fields = require(dirname(__FILE__) . '/admin/yuansfer-settings.php');
 	}
 
 	/**
@@ -73,25 +69,25 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
 		$lastname             = '';
 
 		// If paying from order, we need to get total from order not cart.
-		if ( isset( $_GET['pay_for_order'] ) && ! empty( $_GET['key'] ) ) {
-			$order      = wc_get_order( wc_get_order_id_by_order_key( wc_clean( $_GET['key'] ) ) );
+		if (isset($_GET['pay_for_order']) && !empty($_GET['key'])) {
+			$order      = wc_get_order(wc_get_order_id_by_order_key(wc_clean($_GET['key'])));
 			$total      = $order->get_total();
 			$user_email = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_email : $order->get_billing_email();
 		} else {
-			if ( $user->ID ) {
-				$user_email = get_user_meta( $user->ID, 'billing_email', true );
+			if ($user->ID) {
+				$user_email = get_user_meta($user->ID, 'billing_email', true);
 				$user_email = $user_email ? $user_email : $user->user_email;
 			}
 		}
 
-		if ( is_add_payment_method_page() ) {
-			$pay_button_text = __( 'Add Card', 'woocommerce-yuansfer' );
+		if (is_add_payment_method_page()) {
+			$pay_button_text = __('Add Card', 'woocommerce-yuansfer');
 			$total           = '';
 			$firstname       = $user->user_firstname;
 			$lastname        = $user->user_lastname;
 
-		} elseif ( function_exists( 'wcs_order_contains_subscription' ) && isset( $_GET['change_payment_method'] ) ) {
-			$pay_button_text = __( 'Change Payment Method', 'woocommerce-yuansfer' );
+		} elseif (function_exists('wcs_order_contains_subscription') && isset($_GET['change_payment_method'])) {
+			$pay_button_text = __('Change Payment Method', 'woocommerce-yuansfer');
 			$total        = '';
 		} else {
 			$pay_button_text = '';
@@ -101,34 +97,34 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
 
 		echo '<div
 			id="yuansfer-payment-data"
-			data-panel-label="' . esc_attr( $pay_button_text ) . '"
-			data-email="' . esc_attr( $user_email ) . '"
-			data-verify-zip="' . esc_attr( apply_filters( 'wc_yuansfer_checkout_verify_zip', false ) ? 'true' : 'false' ) . '"
-			data-billing-address="' . esc_attr( apply_filters( 'wc_yuansfer_checkout_require_billing_address', false ) ? 'true' : 'false' ) . '"
-			data-shipping-address="' . esc_attr( apply_filters( 'wc_yuansfer_checkout_require_shipping_address', false ) ? 'true' : 'false' ) . '" 
-			data-amount="' . esc_attr( WC_Yuansfer_Helper::get_yuansfer_amount( $total ) ) . '"
-			data-name="' . esc_attr( $this->statement_descriptor ) . '"
-			data-full-name="' . esc_attr( $firstname . ' ' . $lastname ) . '"
-			data-currency="' . esc_attr( strtolower( get_woocommerce_currency() ) ) . '"
-			data-locale="' . esc_attr( apply_filters( 'wc_yuansfer_checkout_locale', $this->get_locale() ) ) . '"
-			data-allow-remember-me="' . esc_attr( apply_filters( 'wc_yuansfer_allow_remember_me', true ) ? 'true' : 'false' ) . '">';
+			data-panel-label="' . esc_attr($pay_button_text) . '"
+			data-email="' . esc_attr($user_email) . '"
+			data-verify-zip="' . esc_attr(apply_filters('wc_yuansfer_checkout_verify_zip', false) ? 'true' : 'false') . '"
+			data-billing-address="' . esc_attr(apply_filters('wc_yuansfer_checkout_require_billing_address', false) ? 'true' : 'false') . '"
+			data-shipping-address="' . esc_attr(apply_filters('wc_yuansfer_checkout_require_shipping_address', false) ? 'true' : 'false') . '" 
+			data-amount="' . esc_attr(WC_Yuansfer_Helper::get_yuansfer_amount($total)) . '"
+			data-name="' . esc_attr($this->statement_descriptor) . '"
+			data-full-name="' . esc_attr($firstname . ' ' . $lastname) . '"
+			data-currency="' . esc_attr(strtolower(get_woocommerce_currency())) . '"
+			data-locale="' . esc_attr(apply_filters('wc_yuansfer_checkout_locale', $this->get_locale())) . '"
+			data-allow-remember-me="' . esc_attr(apply_filters('wc_yuansfer_allow_remember_me', true) ? 'true' : 'false') . '">';
 
-		if ( $description ) {
-			if ( $this->testmode ) {
+		if ($description) {
+			if ($this->testmode) {
 				/* translators: link to Yuansfer testing page */
-				$description .= ' ' . sprintf( __( 'TEST MODE ENABLED. In test mode, you can check the <a href="%s" target="_blank">Yuansfer sandbox environment documentation</a> for card numbers.', 'woocommerce-yuansfer' ), 'https://docs.yuansfer.com/en/#sandbox-environment' );
-				$description  = trim( $description );
+				$description .= ' ' . sprintf(__('TEST MODE ENABLED. In test mode, you can check the <a href="%s" target="_blank">Yuansfer sandbox environment documentation</a> for card numbers.', 'woocommerce-yuansfer'), 'https://docs.yuansfer.com/en/#sandbox-environment');
+				$description  = trim($description);
 			}
 
-			echo apply_filters( 'wc_yuansfer_description', wpautop( wp_kses_post( $description ) ), $this->id );
+			echo apply_filters('wc_yuansfer_description', wpautop(wp_kses_post($description)), $this->id);
 		}
 
-		if ( $display_tokenization ) {
+		if ($display_tokenization) {
 			$this->tokenization_script();
 			$this->saved_payment_methods();
 		}
 
-		if ( apply_filters( 'wc_yuansfer_display_save_payment_method_checkbox', $display_tokenization ) && ! is_add_payment_method_page() && ! isset( $_GET['change_payment_method'] ) ) {
+		if (apply_filters('wc_yuansfer_display_save_payment_method_checkbox', $display_tokenization) && !is_add_payment_method_page() && !isset($_GET['change_payment_method'])) {
 			$this->save_payment_method_checkbox();
 		}
 
@@ -141,13 +137,13 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
 	 * Load admin scripts.
 	 */
 	public function admin_scripts() {
-		if ( 'woocommerce_page_wc-settings' !== get_current_screen()->id ) {
+		if ('woocommerce_page_wc-settings' !== get_current_screen()->id) {
 			return;
 		}
 
-		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		$suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( 'woocommerce_yuansfer_admin', plugins_url( 'assets/js/yuansfer-admin' . $suffix . '.js', WC_YUANSFER_MAIN_FILE ), array(), WC_YUANSFER_VERSION, true );
+		wp_enqueue_script('woocommerce_yuansfer_admin', plugins_url('assets/js/yuansfer-admin' . $suffix . '.js', WC_YUANSFER_MAIN_FILE), array(), WC_YUANSFER_VERSION, true);
 	}
 
 	/**
@@ -156,85 +152,12 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
 	 * Outputs scripts used for yuansfer payment
 	 */
 	public function payment_scripts() {
-		if ( ! is_cart() && ! is_checkout() && ! isset( $_GET['pay_for_order'] ) && ! is_add_payment_method_page() && ! isset( $_GET['change_payment_method'] ) ) {
-			return;
-		}
+        if (!is_cart() && !is_checkout() && !isset($_GET['pay_for_order']) && !is_add_payment_method_page()) {
+            return;
+        }
 
-		// If Yuansfer is not enabled bail.
-		if ( 'no' === $this->enabled ) {
-			return;
-		}
-
-		// If keys are not set bail.
-		if ( ! $this->are_keys_set() ) {
-			WC_Yuansfer_Logger::log( 'Keys are not set correctly.' );
-			return;
-		}
-
-		// If no SSL bail.
-		if ( ! $this->testmode && ! is_ssl() ) {
-			WC_Yuansfer_Logger::log( 'Yuansfer live mode requires SSL.' );
-		}
-
-		$current_theme = wp_get_theme();
-
-		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-
-		wp_register_style( 'yuansfer_styles', plugins_url( 'assets/css/yuansfer-styles.css', WC_YUANSFER_MAIN_FILE ), array(), WC_YUANSFER_VERSION );
-		wp_enqueue_style( 'yuansfer_styles' );
-
-		if ( 'storefront' === $current_theme->get_template() ) {
-			wp_register_style( 'yuansfer_storefront_styles', plugins_url( 'assets/css/yuansfer-storefront-styles.css', WC_YUANSFER_MAIN_FILE ), array(), WC_YUANSFER_VERSION );
-			wp_enqueue_style( 'yuansfer_storefront_styles' );
-		}
-
-		if ( 'twentyseventeen' === $current_theme->get_template() ) {
-			wp_register_style( 'yuansfer_twentyseventeen_styles', plugins_url( 'assets/css/yuansfer-twentyseventeen-styles.css', WC_YUANSFER_MAIN_FILE ), array(), WC_YUANSFER_VERSION );
-			wp_enqueue_style( 'yuansfer_twentyseventeen_styles' );
-		}
-
-		//wp_register_script( 'yuansfer_checkout', 'https://checkout.yuansfer.com/checkout.js', '', WC_YUANSFER_VERSION, true );
-		//wp_register_script( 'yuansfer', 'https://js.yuansfer.com/v3/', '', '3.0', true );
-		wp_register_script( 'woocommerce_yuansfer', plugins_url( 'assets/js/yuansfer' . $suffix . '.js', WC_YUANSFER_MAIN_FILE ), array( 'jquery-payment', 'yuansfer' ), WC_YUANSFER_VERSION, true );
-
-		$yuansfer_params = array(
-			'i18n_terms'           => __( 'Please accept the terms and conditions first', 'woocommerce-yuansfer' ),
-			'i18n_required_fields' => __( 'Please fill in required checkout fields first', 'woocommerce-yuansfer' ),
-		);
-
-		// If we're on the pay page we need to pass yuansfer.js the address of the order.
-		if ( isset( $_GET['pay_for_order'] ) && 'true' === $_GET['pay_for_order'] ) {
-			$order_id = wc_get_order_id_by_order_key( urldecode( $_GET['key'] ) );
-			$order    = wc_get_order( $order_id );
-
-			$yuansfer_params['billing_first_name'] = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_first_name : $order->get_billing_first_name();
-			$yuansfer_params['billing_last_name']  = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_last_name : $order->get_billing_last_name();
-			$yuansfer_params['billing_address_1']  = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_address_1 : $order->get_billing_address_1();
-			$yuansfer_params['billing_address_2']  = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_address_2 : $order->get_billing_address_2();
-			$yuansfer_params['billing_state']      = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_state : $order->get_billing_state();
-			$yuansfer_params['billing_city']       = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_city : $order->get_billing_city();
-			$yuansfer_params['billing_postcode']   = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_postcode : $order->get_billing_postcode();
-			$yuansfer_params['billing_country']    = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_country : $order->get_billing_country();
-		}
-
-		$yuansfer_params['sepa_mandate_notification']               = apply_filters( 'wc_yuansfer_sepa_mandate_notification', 'email' );
-		$yuansfer_params['is_checkout']                             = ( is_checkout() && empty( $_GET['pay_for_order'] ) ) ? 'yes' : 'no';
-		$yuansfer_params['return_url']                              = $this->get_yuansfer_return_url();
-		$yuansfer_params['ajaxurl']                                 = WC_AJAX::get_endpoint( '%%endpoint%%' );
-		$yuansfer_params['yuansfer_nonce']                            = wp_create_nonce( '_wc_yuansfer_nonce' );
-		$yuansfer_params['statement_descriptor']                    = $this->statement_descriptor;
-		$yuansfer_params['elements_options']                        = apply_filters( 'wc_yuansfer_elements_options', array() );
-		$yuansfer_params['is_change_payment_page']                  = isset( $_GET['change_payment_method'] ) ? 'yes' : 'no';
-		$yuansfer_params['is_add_payment_page']                     = is_wc_endpoint_url( 'add-payment-method' ) ? 'yes' : 'no';
-		$yuansfer_params['is_pay_for_order_page']                   = is_wc_endpoint_url( 'order-pay' ) ? 'yes' : 'no';
-		$yuansfer_params['elements_styling']                        = apply_filters( 'wc_yuansfer_elements_styling', false );
-		$yuansfer_params['elements_classes']                        = apply_filters( 'wc_yuansfer_elements_classes', false );
-
-		// merge localized messages to be use in JS
-		$yuansfer_params = array_merge( $yuansfer_params, WC_Yuansfer_Helper::get_localized_messages() );
-
-		$this->tokenization_script();
-		wp_enqueue_script( 'woocommerce_yuansfer' );
+        wp_enqueue_style('yuansfer_styles');
+        wp_enqueue_script('woocommerce_yuansfer');
 	}
 
     /**
@@ -243,28 +166,28 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
      * @param object $order
      * @return mixed
      */
-    public function create_source( $order ) {
+    public function create_source($order) {
         $currency                 = WC_Yuansfer_Helper::is_pre_30() ? $order->get_order_currency() : $order->get_currency();
         $order_id                 = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
-        $return_url               = $this->get_yuansfer_return_url( $order );
+        $return_url               = $this->get_yuansfer_return_url($order);
         $post_data                = array();
-        $post_data['merchantNo'] = $this->merchant_no;
-        $post_data['storeNo']    = $this->store_no;
-        $post_data['amount']      = WC_Yuansfer_Helper::get_yuansfer_amount( $order->get_total(), $currency );
-        $post_data['currency']    = strtoupper( $currency );
+        $post_data['merchantNo']  = $this->merchant_no;
+        $post_data['storeNo']     = $this->store_no;
+        $post_data['amount']      = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
+        $post_data['currency']    = strtoupper($currency);
         $post_data['vendor']      = 'unionpay';
         $post_data['reference']   = $order_id . ':' . uniqid('unionpay:');
         $post_data['ipnUrl']      = WC_Yuansfer_Helper::get_webhook_url();
         $post_data['callbackUrl'] = $return_url;
         $post_data['terminal']    = 'ONLINE';
 
-        if ( ! empty( $this->statement_descriptor ) ) {
-            $post_data['description'] = WC_Yuansfer_Helper::clean_statement_descriptor( $this->statement_descriptor );
+        if (!empty($this->statement_descriptor)) {
+            $post_data['description'] = WC_Yuansfer_Helper::clean_statement_descriptor($this->statement_descriptor);
         }
 
-        WC_Yuansfer_Logger::log( 'Info: Begin creating UnionPay source' );
+        WC_Yuansfer_Logger::log('Info: Begin creating UnionPay source');
 
-        return WC_Yuansfer_API::request( apply_filters( 'wc_yuansfer_unionpay_source', $post_data, $order ), 'securepay' );
+        return WC_Yuansfer_API::request(apply_filters('wc_yuansfer_unionpay_source', $post_data, $order), 'securepay');
     }
 
 	/**
@@ -278,53 +201,53 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
 	 *
 	 * @return array
 	 */
-	public function process_payment( $order_id, $retry = true, $force_save_source = false ) {
+	public function process_payment($order_id, $retry = true, $force_save_source = false) {
         try {
-            $order = wc_get_order( $order_id );
+            $order = wc_get_order($order_id);
 
             // This will throw exception if not valid.
-            $this->validate_minimum_order_amount( $order );
+            $this->validate_minimum_order_amount($order);
 
             // This comes from the create account checkbox in the checkout page.
-            $create_account = ! empty( $_POST['createaccount'] ) ? true : false;
+            $create_account = !empty($_POST['createaccount']) ? true : false;
 
-            if ( $create_account ) {
+            if ($create_account) {
                 $new_customer_id     = WC_Yuansfer_Helper::is_pre_30() ? $order->customer_user : $order->get_customer_id();
-                $new_yuansfer_customer = new WC_Yuansfer_Customer( $new_customer_id );
+                $new_yuansfer_customer = new WC_Yuansfer_Customer($new_customer_id);
                 $new_yuansfer_customer->create_customer();
             }
 
-            $response = $this->create_source( $order );
+            $response = $this->create_source($order);
 
-            if ( \strpos($response, 'error') === 0 ) {
-                $order->add_order_note( $response );
+            if (\strpos($response, 'error') === 0) {
+                $order->add_order_note($response);
 
-                throw new WC_Yuansfer_Exception( $response, $response );
+                throw new WC_Yuansfer_Exception($response, $response);
             }
 
-            if ( WC_Yuansfer_Helper::is_pre_30() ) {
-                update_post_meta( $order_id, '_yuansfer_response', $response );
+            if (WC_Yuansfer_Helper::is_pre_30()) {
+                update_post_meta($order_id, '_yuansfer_response', $response);
             } else {
-                $order->update_meta_data( '_yuansfer_response', $response );
+                $order->update_meta_data('_yuansfer_response', $response);
                 $order->save();
             }
 
-            WC_Yuansfer_Logger::log( 'Info: Redirecting to UnionPay...' );
+            WC_Yuansfer_Logger::log('Info: Redirecting to UnionPay...');
 
             return array(
                 'result'   => 'success',
                 'redirect' => WC_Yuansfer_Helper::get_redirect_url($order_id),
             );
-        } catch ( WC_Yuansfer_Exception $e ) {
-            wc_add_notice( $e->getLocalizedMessage(), 'error' );
-            WC_Yuansfer_Logger::log( 'Error: ' . $e->getMessage() );
+        } catch (WC_Yuansfer_Exception $e) {
+            wc_add_notice($e->getLocalizedMessage(), 'error');
+            WC_Yuansfer_Logger::log('Error: ' . $e->getMessage());
 
-            do_action( 'wc_gateway_yuansfer_process_payment_error', $e, $order );
+            do_action('wc_gateway_yuansfer_process_payment_error', $e, $order);
 
-            $statuses = array( 'pending', 'failed' );
+            $statuses = array('pending', 'failed');
 
-            if ( $order->has_status( $statuses ) ) {
-                $this->send_failed_order_email( $order_id );
+            if ($order->has_status($statuses)) {
+                $this->send_failed_order_email($order_id);
             }
 
             return array(

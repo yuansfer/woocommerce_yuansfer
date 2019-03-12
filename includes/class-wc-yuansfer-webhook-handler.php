@@ -1,5 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
 	exit;
 }
 
@@ -14,7 +14,7 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'woocommerce_api_wc_yuansfer', array( $this, 'check_for_webhook' ) );
+		add_action('woocommerce_api_wc_yuansfer', array($this, 'check_for_webhook'));
 	}
 
 	/**
@@ -22,9 +22,7 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
      * @throws Exception
 	 */
 	public function check_for_webhook() {
-		if ( ! isset( $_GET['wc-api'] )
-			|| ( 'wc_yuansfer' !== $_GET['wc-api'] )
-		) {
+		if (!isset($_GET['wc-api']) || ('wc_yuansfer' !== $_GET['wc-api'])) {
 			return;
 		}
 
@@ -32,7 +30,6 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
             $request_body = file_get_contents('php://input');
             $request_headers = array_change_key_case($this->get_request_headers(), CASE_UPPER);
 
-            // 推荐用法
             parse_str($request_body, $post);
 
             // Validate it to make sure it is legit.
@@ -50,28 +47,28 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
         if ('GET' === $_SERVER['REQUEST_METHOD']) {
 		    $order_id = isset($_GET['order_id']) ? $_GET['order_id'] : '';
 
-		    if ( ! $order_id ) {
-                WC_Yuansfer_Logger::log( 'Order ID is empty' );
+		    if (!$order_id) {
+                WC_Yuansfer_Logger::log('Order ID is empty');
                 exit;
             }
 
-            $order = wc_get_order( $order_id );
+            $order = wc_get_order($order_id);
 
-            if ( ! $order ) {
-                WC_Yuansfer_Logger::log( 'Could not find order: ' . $order_id );
+            if (!$order) {
+                WC_Yuansfer_Logger::log('Could not find order: ' . $order_id);
                 exit;
             }
 
-            $response = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta( $order_id, '_yuansfer_response', true ) : $order->get_meta( '_yuansfer_response', true );
+            $response = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, '_yuansfer_response', true) : $order->get_meta('_yuansfer_response', true);
 
-            if ( ! $response ) {
-				WC_Yuansfer_Logger::log( 'Order response not found: ' . $order_id );
+            if (!$response) {
+				WC_Yuansfer_Logger::log('Order response not found: ' . $order_id);
                 exit;
             }
 
 //            $order->update_status( 'on-hold', __( 'Awaiting payment', 'woocommerce-yuansfer' ) );
 
-            echo $response;
+            print_r($response);
             exit;
         }
 	}
@@ -79,15 +76,15 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
 	private function get_order($reference) {
 		list($order_id) = explode(':', $reference);
 
-		$order = wc_get_order( $order_id );
+		$order = wc_get_order($order_id);
 
 		if ($order) {
-			if ( WC_Yuansfer_Helper::is_pre_30() ) {
-				delete_post_meta( $order_id, '_yuansfer_response' );
-				update_post_meta( $order_id, '_yuansfer_reference', $reference );
+			if (WC_Yuansfer_Helper::is_pre_30()) {
+				delete_post_meta($order_id, '_yuansfer_response');
+				update_post_meta($order_id, '_yuansfer_reference', $reference);
 			} else {
-				$order->delete_meta_data( '_yuansfer_response' );
-				$order->update_meta_data( '_yuansfer_reference', $reference );
+				$order->delete_meta_data('_yuansfer_response');
+				$order->update_meta_data('_yuansfer_reference', $reference);
 				$order->save();
 			}
 		}
@@ -102,8 +99,8 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
 	 * @param array  $post The post params from Yuansfer.
 	 * @return bool
 	 */
-	public function is_valid_request( $request_headers = null, $post = null ) {
-		if ( null === $request_headers || null === $post ) {
+	public function is_valid_request($request_headers = null, $post = null) {
+		if (null === $request_headers || null === $post) {
 			return false;
 		}
 
@@ -124,12 +121,12 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
 	 * build our own headers.
 	 */
 	public function get_request_headers() {
-		if ( ! function_exists( 'getallheaders' ) ) {
+		if (!function_exists('getallheaders')) {
 			$headers = array();
 
-			foreach ( $_SERVER as $name => $value ) {
-				if ( strpos($name, 'HTTP_') === 0 ) {
-					$headers[ str_replace( ' ', '-', ucwords( strtolower( str_replace( '_', ' ', substr( $name, 5 ) ) ) ) ) ] = $value;
+			foreach ($_SERVER as $name => $value) {
+				if (strpos($name, 'HTTP_') === 0) {
+					$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
 				}
 			}
 
@@ -146,30 +143,30 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
 	 * @param array $post
      * @throws Exception
 	 */
-	public function process_webhook_success( $post ) {
-		$order = $this->get_order( $post['reference'] );
+	public function process_webhook_success($post) {
+		$order = $this->get_order($post['reference']);
 
-		if ( ! $order ) {
-			WC_Yuansfer_Logger::log( 'Could not find order: ' . $post['reference'] );
+		if (!$order) {
+			WC_Yuansfer_Logger::log('Could not find order: ' . $post['reference']);
 			return;
 		}
 
         $order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
 		$status = $order->get_status();
 
-		if ( 'on-hold' !== $status && 'pending' !== $status ) {
+		if ('on-hold' !== $status && 'pending' !== $status) {
             return;
         }
 
 		// Store other data such as fees
-		WC_Yuansfer_Helper::is_pre_30() ? update_post_meta( $order_id, '_transaction_id', $post['yuansferId'] ) : $order->set_transaction_id( $post['yuansferId'] );
+		WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, '_transaction_id', $post['yuansferId']) : $order->set_transaction_id($post['yuansferId']);
 
-		$order->payment_complete( $post['yuansferId'] );
+		$order->payment_complete($post['yuansferId']);
 
 		/* translators: transaction id */
-		$order->add_order_note( sprintf( __( 'Yuansfer charge complete (Charge ID: %s)', 'woocommerce-yuansfer' ), $post['yuansferId'] ) );
+		$order->add_order_note(sprintf(__('Yuansfer charge complete (Charge ID: %s)', 'woocommerce-yuansfer'), $post['yuansferId']));
 
-		if ( is_callable( array( $order, 'save' ) ) ) {
+		if (is_callable(array($order, 'save'))) {
 			$order->save();
 		}
 
@@ -181,22 +178,22 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
 	 *
 	 * @param array $post
 	 */
-	public function process_webhook_failed( $post ) {
-        $order = $this->get_order( $post['reference'] );
+	public function process_webhook_failed($post) {
+        $order = $this->get_order($post['reference']);
 
-		if ( ! $order ) {
-			WC_Yuansfer_Logger::log( 'Could not find order: ' . $post['reference'] );
+		if (!$order) {
+			WC_Yuansfer_Logger::log('Could not find order: ' . $post['reference']);
 			return;
 		}
 
 		// If order status is already in failed status don't continue.
-		if ( 'failed' === $order->get_status() ) {
+		if ('failed' === $order->get_status()) {
 			return;
 		}
 
-		$order->update_status( 'failed', __( 'This payment failed to clear.', 'woocommerce-yuansfer' ) );
+		$order->update_status('failed', __( 'This payment failed to clear.', 'woocommerce-yuansfer'));
 
-		do_action( 'wc_gateway_yuansfer_process_webhook_payment_error', $order, $post );
+		do_action('wc_gateway_yuansfer_process_webhook_payment_error', $order, $post);
 	}
 
 	/**
@@ -205,23 +202,23 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
 	 *
 	 * @param array $post
 	 */
-	public function process_webhook_canceled( $post ) {
-        $order = $this->get_order( $post['reference'] );
+	public function process_webhook_canceled($post) {
+        $order = $this->get_order($post['reference']);
 
-		if ( ! $order ) {
-            WC_Yuansfer_Logger::log( 'Could not find order: ' . $post['reference'] );
+		if (!$order) {
+            WC_Yuansfer_Logger::log('Could not find order: ' . $post['reference']);
 			return;
 		}
 
         $status = $order->get_status();
 
-		if ( 'on-hold' !== $status || 'cancelled' !== $status ) {
+		if ('on-hold' !== $status || 'cancelled' !== $status) {
 			return;
 		}
 
-		$order->update_status( 'cancelled', __( 'This payment has cancelled.', 'woocommerce-yuansfer' ) );
+		$order->update_status('cancelled', __('This payment has cancelled.', 'woocommerce-yuansfer'));
 
-		do_action( 'wc_gateway_yuansfer_process_webhook_payment_error', $order, $post );
+		do_action('wc_gateway_yuansfer_process_webhook_payment_error', $order, $post);
 	}
 
 	/**
@@ -230,9 +227,9 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
 	 * @param array $post
      * @throws Exception
 	 */
-	public function process_webhook( $post ) {
+	public function process_webhook($post) {
 
-        switch ( $post['status'] ) {
+        switch ($post['status']) {
             case 'success':
                 $this->process_webhook_success($post);
                 break;
