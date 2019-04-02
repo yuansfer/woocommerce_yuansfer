@@ -296,7 +296,7 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 		return apply_filters( 'wc_yuansfer_payment_icons', array(
 			'unionpay'       => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/unionpay.svg" class="yuansfer-unionpay-icon yuansfer-icon" alt="UnionPay" width="42" />',
 			'alipay'     => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/alipay.svg" class="yuansfer-alipay-icon yuansfer-icon" alt="Alipay" width="52" />',
-			'wechatpay'     => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/wechatpay.svg" class="yuansfer-wechatpay-icon yuansfer-icon" alt="Wechat Pay" width="90" />',
+			'wechatpay'     => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/wechatpay.png" class="yuansfer-wechatpay-icon yuansfer-icon" alt="Wechat Pay" width="90" />',
             'lakalapay'     => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/lakalapay.svg" class="yuansfer-lakalapay-icon yuansfer-icon" alt="Lakala Pay" width="90" />',
 		) );
 	}
