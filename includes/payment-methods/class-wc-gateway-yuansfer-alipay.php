@@ -157,7 +157,9 @@ class WC_Gateway_Yuansfer_Alipay extends WC_Yuansfer_Payment_Gateway {
             } else {
                 $order->update_meta_data('_yuansfer_response', $response);
                 $order->save();
-            }
+			}
+			
+			$order->payment_complete();
 
 			WC_Yuansfer_Logger::log('Info: Redirecting to Alipay...');
 
