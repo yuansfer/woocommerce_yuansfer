@@ -111,6 +111,7 @@ class WC_Yuansfer
         require_once __DIR__ . '/includes/class-wc-gateway-yuansfer.php';
         require_once __DIR__ . '/includes/payment-methods/class-wc-gateway-yuansfer-alipay.php';
         require_once __DIR__ . '/includes/payment-methods/class-wc-gateway-yuansfer-wechatpay.php';
+        require_once __DIR__ . '/includes/payment-methods/class-wc-gateway-yuansfer-creditcard.php';
         require_once __DIR__ . '/includes/class-wc-yuansfer-order-handler.php';
         require_once __DIR__ . '/includes/class-wc-yuansfer-payment-tokens.php';
         require_once __DIR__ . '/includes/class-wc-yuansfer-customer.php';
@@ -191,12 +192,14 @@ class WC_Yuansfer
         unset(
             $sections['yuansfer'],
             $sections['yuansfer_alipay'],
-            $sections['yuansfer_wechatpay']
+            $sections['yuansfer_wechatpay'],
+            $sections['yuansfer_creditcard']
         );
 
         $sections['yuansfer'] = __('Yuansfer UnionPay', 'woocommerce-yuansfer');
         $sections['yuansfer_alipay'] = __('Yuansfer Alipay', 'woocommerce-yuansfer');
         $sections['yuansfer_wechatpay'] = __('Yuansfer WeChat Pay', 'woocommerce-yuansfer');
+        $sections['yuansfer_creditcard'] = __('Yuansfer Credit Card', 'woocommerce-yuansfer');
 
         return $sections;
     }
