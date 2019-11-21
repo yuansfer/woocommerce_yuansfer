@@ -180,7 +180,7 @@ class WC_Yuansfer
         $methods[] = 'WC_Gateway_Yuansfer';
         $methods[] = 'WC_Gateway_Yuansfer_Alipay';
         $methods[] = 'WC_Gateway_Yuansfer_Wechatpay';
-
+        $methods[] = 'WC_Gateway_Yuansfer_Creditcard';
         return $methods;
     }
 
