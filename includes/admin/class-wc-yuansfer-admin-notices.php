@@ -70,6 +70,7 @@ class WC_Yuansfer_Admin_Notices {
 		return array(
 			'Alipay'        => 'WC_Gateway_Yuansfer_Alipay',
             'WechatPay'     => 'WC_Gateway_Yuansfer_Wechatpay',
+            'CreditCard'     => 'WC_Gateway_Yuansfer_Creditcard',
 		);
 	}
 
@@ -189,7 +190,6 @@ class WC_Yuansfer_Admin_Notices {
                 case 'WechatPay':
                     update_option('wc_yuansfer_show_wechatpay_notice', 'no');
                     break;
-
                 case 'CreditCard':
                     update_option('wc_yuansfer_show_creditcard_notice', 'no');
                     break;
