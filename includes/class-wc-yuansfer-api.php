@@ -121,6 +121,7 @@ class WC_Yuansfer_API {
         }
 
         $verifySign = $params[static::KEY];
+        unset($params[static::KEY]);
 
         return $verifySign === static::generate_sign($params);
     }
