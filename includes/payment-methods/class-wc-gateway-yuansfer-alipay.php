@@ -95,13 +95,21 @@ class WC_Gateway_Yuansfer_Alipay extends WC_Yuansfer_Payment_Gateway {
 	 */
 	public function create_source($order) {
 		$currency                 = WC_Yuansfer_Helper::is_pre_30() ? $order->get_order_currency() : $order->get_currency();
+        if (!$currency) {
+            $currency = get_woocommerce_currency();
+        }
 		$order_id                 = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
 		$return_url               = $this->get_yuansfer_return_url($order);
 		$post_data                = array();
         $post_data['merchantNo']  = $this->merchant_no;
 		$post_data['storeNo']     = $this->store_no;
-		$post_data['amount']      = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
-		$post_data['currency']    = strtoupper($currency);
+        $currency = strtoupper($currency);
+        if (in_array($currency, ['RMB', 'CNY'], true)) {
+            $post_data['rmbAmount']      = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
+        } else {
+            $post_data['amount'] = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
+        }
+		$post_data['currency']    = 'USD';
 		$post_data['vendor']      = 'alipay';
         $post_data['reference']   = $order_id . ':' . uniqid('alipay:');
         $post_data['ipnUrl']      = WC_Yuansfer_Helper::get_webhook_url();

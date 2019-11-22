@@ -857,7 +857,15 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 		}
 
 		if (!is_null($amount)) {
-			$request['amount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $order_currency);
+            if (!$order_currency) {
+                $order_currency = get_woocommerce_currency();
+            }
+
+		    if (in_array(strtoupper($order_currency), ['RMB', 'CNY'], true)) {
+                $request['rmbAmount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $order_currency);
+            } else {
+                $request['amount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $order_currency);
+            }
 		}
 
 		if (!empty($this->manager_no)) {
