@@ -1,7 +1,7 @@
 === WooCommerce Yuansfer Payment ===
 
 ```
-Contributors: flyinghail
+Contributors: yuansfer-team
 Tags: yuansfer, payment request, unionpay, alipay, wechat pay, woocommerce, automattic
 Requires at least: 4.4
 Tested up to: 4.9
@@ -9,28 +9,48 @@ Requires PHP: 5.6
 Stable tag: 4.1.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
-Attributions: flyinghail-yuansfer
+Attributions: yuansfer-team
 ```
 
 Take payments on your store using Yuansfer.
 
 == Description ==
 
-Accept Union Pay, Alipay, WeChat Pay directly on your store with the Yuansfer payment for WooCommerce.
+= Introduction =
 
-= Take payments easily and directly on your store =
+Yuansfer Payment Gateway/Extension (free) enables you to incorporate Chinese payment methods including WeChat Pay, China UnionPay, and Alipay. You can allow customers to make Chinese online and mobile payments with only a few clicks.
 
-The Yuansfer plugin extends WooCommerce allowing you to take payments directly on your store via Yuansfer’s API.
+= Background =
 
-Yuansfer is a simple way to accept payments online. With Yuansfer you can accept Union Pay, Alipay, WeChat Pay directly on your store.
+With a market of consumers surpassing a billion and Alipay and WeChat Pay the preferred way for consumers to make transactions. Allowing your consumers to pay through these apps could allow for a unprecedent growth opportunity for your company. Accepting Alipay, WeChat Pay and Union Pay would grant access to your company to approximately 900 million Chinese online shoppers and more than five million annual visiting tourists as well as two million US residents. 
 
-= Why choose Yuansfer? =
+= Benefits =
 
-Yuansfer has no setup fees, no monthly fees, no hidden costs: you only get charged when you earn money! Earnings are transferred to your bank account on a 7-day rolling basis.
+•	2 business funding in USD to any US bank account.
+•	Full & partial refunds.
+•	Pre-authorization or Pre-auth available for hotel, travel, and car rental merchants.
+•	Most transparent pricing at 2.3% per transaction, with No surcharges, No hidden fees, No monthly fees, and No commitment. (Custom rates available for merchants with large payment volume)
+•	Currently only available in the US.
 
-= Web Payments API Support =
+= Features =
 
-WooCommerce Yuansfer now includes [Web Payments API](https://www.w3.org/TR/payment-request/) support, which means customers can pay using payment details associated to their mobile devices, in browsers supporting the Web Payments API (Chrome for Android, amongst others). Checkout is now just a few taps away. on mobile. Only supports simple and variable products for now. More support to come.
+•	Swift Transactions using Alipay/WeChat Pay/ China Union Pay 
+•	Improved engagement with Chinese shoppers
+•	Increased security measures to protect both you and your customers
+•	Technologies to help reduce your cart abandonment rate to increase sales.
+•	Review statistics to make informed decisions about what works and what doesn’t
+
+= Process Flows =
+
+1.	The customer places an order on your website and chooses to pay with Alipay, WeChat Pay or China Union Pay.
+2.	The customer is redirected to the Alipay or WeChat Pay website/App to log in and is prompted to confirm payment within the e-wallet.
+3.	The payment status is communicated to you in real-time.
+4.	We remit the collected payments to you in 2 business days. 
+
+= About Yuansfer =
+
+As the world becomes increasingly interconnected and cross border purchases are growing exponentially- both in stores and online; businesses are now faced with the challenge of trying to meet the consumers’ demand for seamless payments. 
+Yuansfer seeks to empower merchants with reliable global payment technology and help them expand to international markets. We are a global company ourselves with offices in New York City, Los Angeles and China. And we take pride in growing business from local to global, while bridging the gap between US brands and Chinese consumers with our proven payment solutions.
 
 == Installation ==
 
@@ -53,25 +73,23 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 
 == Frequently Asked Questions ==
 
-= Does this support recurring payments, like for subscriptions? =
+= How long is the on-boarding time with Yuansfer? =
 
-Yes!
+Normally it takes 1-2 business days.
 
-= Does this require an SSL certificate? =
+= What is the cost of using Yuansfer gateway for Alipay, WeChat Pay and China Union Pay? =
 
-Yes! In live mode, an SSL certificate must be installed on your site to use Yuansfer. In addition to SSL encryption, Yuansfer provides an extra JavaScript method to secure card data.
+2.3% per transaction, with No surcharges, No hidden fees, No monthly fees, and No commitment. (Custom rates available for merchants with large payment volume)
 
-= Does this support both production mode and sandbox mode for testing? =
+= Does Yuansfer support currencies other than USD? =
 
-Yes it does - production and sandbox mode is driven by the API keys you use.
+No, we currently only support USD funding to US bank accounts.
 
-= Where can I find documentation? =
+= What is your contact? =
 
-For help setting up and configuring, please refer to our [user guide](https://docs.yuansfer.com/)
-
-= Where can I get support or talk to other users? =
-
-If you get stuck, you can ask for help in the Plugin Forum.
+www.yuansfer.com 
+support@Yuansfer.com
+(855) 982-6888
 
 == Screenshots ==
 
@@ -83,12 +101,12 @@ If you get stuck, you can ask for help in the Plugin Forum.
 
 == Changelog ==
 
-= 1.1.0 - 2019-12-22 =
+= 1.1.0 - 2020-07-14 =
 * Add payment method: credit card
 * Add support for new API parameter: rmbAmount
 * Fix status error after order creation
 
-= 1.0.0 - 2018-06-30 =
+= 1.0.0 - 2019-05-30 =
 First Release
 
 == Upgrade Notice ==
