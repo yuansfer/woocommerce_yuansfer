@@ -298,7 +298,7 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 			'unionpay'      => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/unionpay.svg" class="yuansfer-unionpay-icon yuansfer-icon" alt="UnionPay" width="42" />',
 			'alipay'        => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/alipay.svg" class="yuansfer-alipay-icon yuansfer-icon" alt="Alipay" width="52" />',
 			'wechatpay'     => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/wechatpay.png" class="yuansfer-wechatpay-icon yuansfer-icon" alt="Wechat Pay" width="90" />',
-            'creditcard'     => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/creditcard.png" class="yuansfer-wechatpay-icon yuansfer-icon" alt="Credit Card" width="90" />',
+			'creditcard'     => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/creditcard.png" class="yuansfer-wechatpay-icon yuansfer-icon" alt="Credit Card" width="90" />',
 		) );
 	}
 
@@ -857,15 +857,15 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 		}
 
 		if (!is_null($amount)) {
-            if (!$order_currency) {
-                $order_currency = get_woocommerce_currency();
-            }
+			if (!$order_currency) {
+				$order_currency = get_woocommerce_currency();
+			}
 
-		    if (in_array(strtoupper($order_currency), ['RMB', 'CNY'], true)) {
-                $request['rmbAmount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $order_currency);
-            } else {
-                $request['amount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $order_currency);
-            }
+			if (in_array(strtoupper($order_currency), ['RMB', 'CNY'], true)) {
+                		$request['rmbAmount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $order_currency);
+			} else {
+				$request['amount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $order_currency);
+			}
 		}
 
 		if (!empty($this->manager_no)) {

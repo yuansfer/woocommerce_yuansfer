@@ -69,8 +69,8 @@ class WC_Yuansfer_Admin_Notices {
 	public function get_payment_methods() {
 		return array(
 			'Alipay'        => 'WC_Gateway_Yuansfer_Alipay',
-            'WechatPay'     => 'WC_Gateway_Yuansfer_Wechatpay',
-            'CreditCard'     => 'WC_Gateway_Yuansfer_Creditcard',
+			'WechatPay'     => 'WC_Gateway_Yuansfer_Wechatpay',
+			'CreditCard'    => 'WC_Gateway_Yuansfer_Creditcard',
 		);
 	}
 
@@ -187,12 +187,12 @@ class WC_Yuansfer_Admin_Notices {
 				case 'Alipay':
 					update_option('wc_yuansfer_show_alipay_notice', 'no');
 					break;
-                case 'WechatPay':
-                    update_option('wc_yuansfer_show_wechatpay_notice', 'no');
-                    break;
-                case 'CreditCard':
-                    update_option('wc_yuansfer_show_creditcard_notice', 'no');
-                    break;
+				case 'WechatPay':
+					update_option('wc_yuansfer_show_wechatpay_notice', 'no');
+					break;
+				case 'CreditCard':
+					update_option('wc_yuansfer_show_creditcard_notice', 'no');
+					break;
 			}
 		}
 	}

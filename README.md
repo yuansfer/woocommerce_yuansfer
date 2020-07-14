@@ -1,7 +1,7 @@
 === WooCommerce Yuansfer Payment ===
 
 ```
-Contributors: yuansfer-team
+Contributors: yuansfer
 Tags: yuansfer, payment request, unionpay, alipay, wechat pay, woocommerce, automattic
 Requires at least: 4.4
 Tested up to: 4.9

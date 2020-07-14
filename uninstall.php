@@ -20,10 +20,10 @@ if (defined('WC_REMOVE_ALL_DATA') && true === WC_REMOVE_ALL_DATA) {
 	delete_option('wc_yuansfer_show_ssl_notice');
 	delete_option('wc_yuansfer_show_keys_notice');
 	delete_option('wc_yuansfer_show_alipay_notice');
-    delete_option('wc_yuansfer_show_wechatpay_notice');
-    delete_option('wc_yuansfer_show_creditcard_notice');
+	delete_option('wc_yuansfer_show_wechatpay_notice');
+	delete_option('wc_yuansfer_show_creditcard_notice');
 	delete_option('wc_yuansfer_version');
 	delete_option('woocommerce_yuansfer_alipay_settings');
-    delete_option('woocommerce_yuansfer_wechatpay_settings');
-    delete_option('woocommerce_yuansfer_creditcard_settings');
+	delete_option('woocommerce_yuansfer_wechatpay_settings');
+	delete_option('woocommerce_yuansfer_creditcard_settings');
 }
