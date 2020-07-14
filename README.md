@@ -83,6 +83,11 @@ If you get stuck, you can ask for help in the Plugin Forum.
 
 == Changelog ==
 
+= 1.1.0 - 2019-12-22 =
+* Add payment method: credit card
+* Add support for new API parameter: rmbAmount
+* Fix status error after order creation
+
 = 1.0.0 - 2018-06-30 =
 First Release
 
