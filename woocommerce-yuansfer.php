@@ -1,13 +1,13 @@
 <?php
 /*
  * Plugin Name: WooCommerce Yuansfer
- * Plugin URI: https://wordpress.org/plugins/woocommerce-yuansfer/
+ * Plugin URI: https://wordpress.org/plugins/woo-yuansfer/
  * Description: Provides a Yuansfer Payment Gateway
- * Author: FlyingHail
- * Author URI: https://www.flyinghail.net/
- * Version: 1.0.0
- * WC requires at least: 2.6
- * WC tested up to: 3.4
+ * Author: Yuansfer
+ * Author URI: https://www.yuansfer-com/
+ * Version: 1.1.1
+ * WC requires at least: 3.0
+ * WC tested up to: 4.3
  */
 
 if (!defined('ABSPATH')) {
@@ -34,9 +34,9 @@ function woocommerce_yuansfer_init()
     /**
      * Required minimums and constants
      */
-    define('WC_YUANSFER_VERSION', '1.0.0');
+    define('WC_YUANSFER_VERSION', '1.1.1');
     define('WC_YUANSFER_MIN_PHP_VER', '5.6.0');
-    define('WC_YUANSFER_MIN_WC_VER', '2.6.0');
+    define('WC_YUANSFER_MIN_WC_VER', '3.0');
     define('WC_YUANSFER_MAIN_FILE', __FILE__);
     define('WC_YUANSFER_PLUGIN_URL', untrailingslashit(plugins_url(basename(plugin_dir_path(__FILE__)), basename(__FILE__))));
     define('WC_YUANSFER_PLUGIN_PATH', untrailingslashit(plugin_dir_path(__FILE__)));

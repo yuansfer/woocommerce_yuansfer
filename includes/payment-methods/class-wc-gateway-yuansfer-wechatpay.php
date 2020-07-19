@@ -92,11 +92,11 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
 	 * @return mixed
 	 */
     public function create_source($order) {
-        $currency                 = WC_Yuansfer_Helper::is_pre_30() ? $order->get_order_currency() : $order->get_currency();
+        $currency                 = $order->get_currency();
         if (!$currency) {
             $currency = get_woocommerce_currency();
         }
-        $order_id                 = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
+        $order_id                 = $order->get_id();
         $return_url               = $this->get_yuansfer_return_url($order);
         $post_data                = array();
         $post_data['merchantNo']  = $this->merchant_no;
@@ -120,7 +120,7 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
 
         WC_Yuansfer_Logger::log('Info: Begin creating WeChat Pay source');
 
-        return WC_Yuansfer_API::request(apply_filters('wc_yuansfer_wechatpay_source', $post_data, $order), 'securepay');
+        return WC_Yuansfer_API::request(apply_filters('wc_yuansfer_wechatpay_source', $post_data, $order), 'online:secure-pay');
     }
 
 	/**
@@ -141,15 +141,6 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
             // This will throw exception if not valid.
             $this->validate_minimum_order_amount($order);
 
-            // This comes from the create account checkbox in the checkout page.
-            $create_account = !empty($_POST['createaccount']) ? true : false;
-
-            if ($create_account) {
-                $new_customer_id     = WC_Yuansfer_Helper::is_pre_30() ? $order->customer_user : $order->get_customer_id();
-                $new_yuansfer_customer = new WC_Yuansfer_Customer($new_customer_id);
-                $new_yuansfer_customer->create_customer();
-            }
-
             $response = $this->create_source($order);
 
             if (\strpos($response, 'error') === 0) {
@@ -158,14 +149,8 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
                 throw new WC_Yuansfer_Exception($response, $response);
             }
 
-            if (WC_Yuansfer_Helper::is_pre_30()) {
-                update_post_meta($order_id, '_yuansfer_response', $response);
-            } else {
-                $order->update_meta_data('_yuansfer_response', $response);
-                $order->save();
-	    }
-			
-	    // $order->payment_complete();
+            $order->update_meta_data('_yuansfer_response', $response);
+            $order->save();
 
             WC_Yuansfer_Logger::log('Info: Redirecting to Wechat Pay...');
 

@@ -16,8 +16,8 @@ class WC_Yuansfer_API {
     /**
 	 * Yuansfer API URL
 	 */
-    const PRODUCTION_URL = 'https://mapi.yuansfer.com/appTransaction';
-    const TEST_URL = 'https://mapi.yuansfer.yunkeguan.com/appTransaction';
+    const PRODUCTION_URL = 'https://mapi.yuansfer.com';
+    const TEST_URL = 'https://mapi.yuansfer.yunkeguan.com';
 
 	/**
 	 * Secret API Token.
@@ -141,8 +141,10 @@ class WC_Yuansfer_API {
 
 		$request = self::append_sign($request);
 
+		list($base, $api) = explode(':', $api);
+
 		$response = wp_safe_remote_post(
-			self::get_url() . '/' . self::VERSION . '/' . $api,
+			self::get_url() . '/' . $base . '/' . self::VERSION . '/' . $api,
 			array(
 				'method'  => $method,
 				'body'    => apply_filters( 'woocommerce_yuansfer_request_body', $request, $api ),
@@ -158,23 +160,23 @@ class WC_Yuansfer_API {
 			throw new WC_Yuansfer_Exception(print_r($response, true), __('There was a problem connecting to the Yuansfer API endpoint.', 'woocommerce-yuansfer'));
 		}
 
-		if ($api === 'securepay') {
+		if ($api === 'secure-pay') {
 		    if (WC_Yuansfer_Helper::is_html((string)$response['body'])) {
                 return $response['body'];
-            } else {
-                WC_Yuansfer_Logger::log('Error Response: ' . print_r($response['body']) . PHP_EOL . PHP_EOL . 'Failed request: ' . print_r(array(
-                        'api'             => $api,
-                        'request'         => $request,
-                    ), true ));
-
-                if (WC_Yuansfer_Helper::is_json((string)$response['body'])) {
-                    $res_json = json_decode((string)$response['body']);
-                    $errmsg = $res_json->retMsg;
-                } else {
-                    $errmsg = __('Internal Server Error.', 'woocommerce-yuansfer');
-                }
-                throw new WC_Yuansfer_Exception(print_r($response, true), $errmsg);
             }
+
+            WC_Yuansfer_Logger::log('Error Response: ' . print_r($response['body']) . PHP_EOL . PHP_EOL . 'Failed request: ' . print_r(array(
+                    'api'             => $api,
+                    'request'         => $request,
+                ), true ));
+
+            if (WC_Yuansfer_Helper::is_json((string)$response['body'])) {
+                $res_json = json_decode((string)$response['body']);
+                $errmsg = $res_json->ret_msg;
+            } else {
+                $errmsg = __('Internal Server Error.', 'woocommerce-yuansfer');
+            }
+            throw new WC_Yuansfer_Exception(print_r($response, true), $errmsg);
         }
 
 		return json_decode($response['body']);

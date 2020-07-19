@@ -1,6 +1,6 @@
 <?php
-if (!defined('ABSPATH')) {
-	exit;
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
 }
 
 /**
@@ -10,300 +10,232 @@ if (!defined('ABSPATH')) {
  */
 class WC_Yuansfer_Customer {
 
-	/**
-	 * Yuansfer customer ID
-	 * @var string
-	 */
-	private $id = '';
+    /**
+     * Yuansfer customer ID
+     * @var string
+     */
+    private $id = '';
 
-	/**
-	 * WP User ID
-	 * @var integer
-	 */
-	private $user_id = 0;
+    /**
+     * WP User ID
+     * @var integer
+     */
+    private $user_id = 0;
 
-	/**
-	 * Data from API
-	 * @var array
-	 */
-	private $customer_data = array();
+    /**
+     * Data from API
+     * @var array
+     */
+    private $customer_data = array();
 
-	/**
-	 * Constructor
-	 * @param int $user_id The WP user ID
-	 */
-	public function __construct($user_id = 0) {
-		if ($user_id) {
-			$this->set_user_id($user_id);
-			$this->set_id(get_user_meta($user_id, '_yuansfer_customer_id', true));
-		}
-	}
+    public $merchant_no;
+    public $store_no;
 
-	/**
-	 * Get Yuansfer customer ID.
-	 * @return string
-	 */
-	public function get_id() {
-		return $this->id;
-	}
+    /**
+     * Constructor
+     * @param int $user_id The WP user ID
+     */
+    public function __construct( $user_id = 0 ) {
+        if ( $user_id ) {
+            $this->set_user_id( $user_id );
+            $this->set_id( $this->get_id_from_meta( $user_id ) );
+        }
 
-	/**
-	 * Set Yuansfer customer ID.
-	 * @param [type] $id [description]
-	 */
-	public function set_id($id) {
-		// Backwards compat for customer ID stored in array format. (Pre 3.0)
-		if (is_array($id) && isset($id['customer_id'])) {
-			$id = $id['customer_id'];
+        $main_settings     = get_option('woocommerce_yuansfer_settings');
+        $this->merchant_no = !empty($main_settings['merchant_no']) ? $main_settings['merchant_no'] : '';
+        $this->store_no    = !empty($main_settings['store_no']) ? $main_settings['store_no'] : '';
+    }
 
-			update_user_meta($this->get_user_id(), '_yuansfer_customer_id', $id);
-		}
+    /**
+     * Get Yuansfer customer ID.
+     * @return string
+     */
+    public function get_id() {
+        return $this->id;
+    }
 
-		$this->id = wc_clean($id);
-	}
+    /**
+     * Set Yuansfer customer ID.
+     * @param [type] $id [description]
+     */
+    public function set_id( $id ) {
+        // Backwards compat for customer ID stored in array format. (Pre 3.0)
+        if ( is_array( $id ) && isset( $id['customer_id'] ) ) {
+            $id = $id['customer_id'];
 
-	/**
-	 * User ID in WordPress.
-	 * @return int
-	 */
-	public function get_user_id() {
-		return absint($this->user_id);
-	}
+            $this->update_id_in_meta( $id );
+        }
 
-	/**
-	 * Set User ID used by WordPress.
-	 * @param int $user_id
-	 */
-	public function set_user_id($user_id) {
-		$this->user_id = absint($user_id);
-	}
+        $this->id = wc_clean( $id );
+    }
 
-	/**
-	 * Get user object.
-	 * @return WP_User
-	 */
-	protected function get_user() {
-		return $this->get_user_id() ? get_user_by('id', $this->get_user_id()) : false;
-	}
+    /**
+     * User ID in WordPress.
+     * @return int
+     */
+    public function get_user_id() {
+        return absint( $this->user_id );
+    }
 
-	/**
-	 * Store data from the Yuansfer API about this customer
-	 */
-	public function set_customer_data($data) {
-		$this->customer_data = $data;
-	}
+    /**
+     * Set User ID used by WordPress.
+     * @param int $user_id
+     */
+    public function set_user_id( $user_id ) {
+        $this->user_id = absint( $user_id );
+    }
 
-	/**
-	 * Create a customer via API.
-	 * @param array $args
-	 * @return WP_Error|int
-	 */
-	public function create_customer($args = array()) {
-		$billing_email = isset($_POST['billing_email']) ? filter_var($_POST['billing_email'], FILTER_SANITIZE_EMAIL) : '';
-		$user          = $this->get_user();
+    /**
+     * Get user object.
+     * @return WP_User
+     */
+    protected function get_user() {
+        return $this->get_user_id() ? get_user_by( 'id', $this->get_user_id() ) : false;
+    }
 
-		if ($user) {
-			$billing_first_name = get_user_meta($user->ID, 'billing_first_name', true);
-			$billing_last_name  = get_user_meta($user->ID, 'billing_last_name', true);
-			$description        = __('Name', 'woocommerce-yuansfer') . ': ' . $billing_first_name . ' ' . $billing_last_name . ' ' . __('Username', 'woocommerce-yuansfer') . ': ' . $user->user_login;
+    /**
+     * Store data from the Yuansfer API about this customer
+     */
+    public function set_customer_data( $data ) {
+        $this->customer_data = $data;
+    }
 
-			$defaults = array(
-				'email'       => $user->user_email,
-				'description' => $description,
-			);
-		} else {
-			$defaults = array(
-				'email'       => $billing_email,
-				'description' => '',
-			);
-		}
+    /**
+     * Generates the customer request, used for both creating and updating customers.
+     *
+     * @param  array $args Additional arguments (optional).
+     * @return array
+     */
+    protected function generate_customer_request( $args = array() ) {
+        $args += array(
+            'merchantNo'    => $this->merchant_no,
+            'storeNo'       => $this->store_no,
+        );
 
-		$metadata = array();
+        return $args;
+    }
 
-		$defaults['metadata'] = apply_filters('wc_yuansfer_customer_metadata', $metadata, $user);
+    /**
+     * Create a customer via API.
+     * @param array $args
+     * @return WP_Error|int
+     */
+    public function create_customer($args) {
+        $args['groupCode'] = 'HPP';
+        $args     = $this->generate_customer_request( $args );
+        $response = WC_Yuansfer_API::request( $args, 'creditpay:customer/add' );
 
-		$args     = wp_parse_args($args, $defaults);
-		$response = WC_Yuansfer_API::request(apply_filters('wc_yuansfer_create_customer_args', $args), 'customers');
+        if ( empty( $response->ret_code ) || $response->ret_code !== '000100' ) {
+            throw new WC_Yuansfer_Exception( print_r( $response, true ), $response->error->message );
+        }
 
-		if (!empty($response->error)) {
-			throw new WC_Yuansfer_Exception(print_r($response, true), $response->error->message);
-		}
+        $customer = $response->customerInfo;
 
-		$this->set_id($response->id);
-		$this->clear_cache();
-		$this->set_customer_data($response);
+        $this->set_id( $customer->customerNo );
+        $this->clear_cache();
+        $this->set_customer_data( $customer );
 
-		if ($this->get_user_id()) {
-			update_user_meta($this->get_user_id(), '_yuansfer_customer_id', $response->id);
-		}
+        if ( $this->get_user_id() ) {
+            $this->update_id_in_meta( $customer->customerNo );
+        }
 
-		do_action('woocommerce_yuansfer_add_customer', $args, $response);
+        do_action( 'woocommerce_yuansfer_add_customer', $args, $response );
 
-		return $response->id;
-	}
+        return $customer->customerNo;
+    }
 
-	/**
-	 * Checks to see if error is of invalid request
-	 * error and it is no such customer.
-	 *
-	 * @param array $error
-	 */
-	public function is_no_such_customer_error($error) {
-		return (
-			$error &&
-			'invalid_request_error' === $error->type &&
-			preg_match('/No such customer/i', $error->message)
-		);
-	}
+    /**
+     * Updates the Yuansfer customer through the API.
+     *
+     * @param array $args
+     * @param bool  $is_retry Whether the current call is a retry (optional, defaults to false). If true, then an exception will be thrown instead of further retries on error.
+     *
+     * @return string Customer ID
+     *
+     * @throws WC_Yuansfer_Exception
+     */
+    public function update_customer( $args, $is_retry = false ) {
+        if ( empty( $this->get_id() ) ) {
+            throw new WC_Yuansfer_Exception( 'id_required_to_update_user', __( 'Attempting to update a Yuansfer customer without a customer ID.', 'woocommerce-gateway-yuansfer' ) );
+        }
 
-	/**
-	 * Add a source for this yuansfer customer.
-	 * @param string $source_id
-	 * @param bool $retry
-	 * @return WP_Error|int
-	 */
-	public function add_source($source_id, $retry = true) {
-		if (!$this->get_id()) {
-			$this->set_id($this->create_customer());
-		}
+        $args     = $this->generate_customer_request($args);
+        $response = WC_Yuansfer_API::request( $args, 'creditpay:customer/edit' );
 
-		$response = WC_Yuansfer_API::request(array(
-			'source' => $source_id,
-		), 'customers/' . $this->get_id() . '/sources');
+        if ( empty( $response->ret_code ) || $response->ret_code !== '000100' ) {
+            if ( ! $is_retry && $this->is_no_such_customer_error( $response->ret_msg ) ) {
+                // This can happen when switching the main Yuansfer account or importing users from another site.
+                // If not already retrying, recreate the customer and then try updating it again.
+                $this->recreate_customer();
+                return $this->update_customer( true );
+            }
 
-		$wc_token = false;
+            throw new WC_Yuansfer_Exception( $response->ret_msg );
+        }
 
-		if (!empty($response->error)) {
-			// It is possible the WC user once was linked to a customer on Yuansfer
-			// but no longer exists. Instead of failing, lets try to create a
-			// new customer.
-			if ($this->is_no_such_customer_error($response->error)) {
-				delete_user_meta($this->get_user_id(), '_yuansfer_customer_id');
-				$this->create_customer();
-				return $this->add_source($source_id, false);
-			} else {
-				return $response;
-			}
-		} elseif (empty($response->id)) {
-			return new WP_Error('error', __('Unable to add payment source.', 'woocommerce-yuansfer'));
-		}
+        $this->clear_cache();
+        $this->set_customer_data( $response->customerInfo );
 
-		// Add token to WooCommerce.
-		if ($this->get_user_id() && class_exists('WC_Payment_Token_CC')) {
-			if (!empty($response->type)) {
-				switch ($response->type) {
-					case 'alipay':
-						break;
-					default:
-						if ('source' === $response->object && 'card' === $response->type) {
-							$wc_token = new WC_Payment_Token_CC();
-							$wc_token->set_token($response->id);
-							$wc_token->set_gateway_id('yuansfer');
-							$wc_token->set_card_type(strtolower($response->card->brand));
-							$wc_token->set_last4($response->card->last4);
-							$wc_token->set_expiry_month($response->card->exp_month);
-							$wc_token->set_expiry_year($response->card->exp_year);
-						}
-						break;
-				}
-			} else {
-				// Legacy.
-				$wc_token = new WC_Payment_Token_CC();
-				$wc_token->set_token($response->id);
-				$wc_token->set_gateway_id('yuansfer');
-				$wc_token->set_card_type(strtolower($response->brand));
-				$wc_token->set_last4($response->last4);
-				$wc_token->set_expiry_month($response->exp_month);
-				$wc_token->set_expiry_year($response->exp_year);
-			}
+        do_action( 'woocommerce_yuansfer_update_customer', $args, $response );
 
-			$wc_token->set_user_id($this->get_user_id());
-			$wc_token->save();
-		}
+        return $this->get_id();
+    }
 
-		$this->clear_cache();
+    /**
+     * Checks to see if error is of invalid request
+     * error and it is no such customer.
+     *
+     * @since 4.1.2
+     * @param array $error
+     */
+    public function is_no_such_customer_error( $error ) {
+        return (
+            $error &&
+            preg_match( '/No such customer/i', $error )
+        );
+    }
 
-		do_action('woocommerce_yuansfer_add_source', $this->get_id(), $wc_token, $response, $source_id);
+    /**
+     * Deletes caches for this users cards.
+     */
+    public function clear_cache() {
+        delete_transient( 'yuansfer_customer_' . $this->get_id() );
+        $this->customer_data = array();
+    }
 
-		return $response->id;
-	}
+    /**
+     * Retrieves the Yuansfer Customer ID from the user meta.
+     *
+     * @param  int $user_id The ID of the WordPress user.
+     * @return string|bool  Either the Yuansfer ID or false.
+     */
+    public function get_id_from_meta( $user_id ) {
+        return get_user_option( '_yuansfer_customer_id', $user_id );
+    }
 
-	/**
-	 * Get a customers saved sources using their Yuansfer ID.
-	 *
-	 * @param  string $customer_id
-	 * @return array
-	 */
-	public function get_sources() {
-		if (!$this->get_id()) {
-			return array();
-		}
+    /**
+     * Updates the current user with the right Yuansfer ID in the meta table.
+     *
+     * @param string $id The Yuansfer customer ID.
+     */
+    public function update_id_in_meta( $id ) {
+        update_user_option( $this->get_user_id(), '_yuansfer_customer_id', $id, false );
+    }
 
-		$sources = get_transient('yuansfer_sources_' . $this->get_id());
+    /**
+     * Deletes the user ID from the meta table with the right key.
+     */
+    public function delete_id_from_meta() {
+        delete_user_option( $this->get_user_id(), '_yuansfer_customer_id', false );
+    }
 
-		$response = WC_Yuansfer_API::request(array(
-			'limit'       => 100,
-		), 'customers/' . $this->get_id() . '/sources', 'GET');
-
-		if (!empty($response->error)) {
-			return array();
-		}
-
-		if (is_array($response->data)) {
-			$sources = $response->data;
-		}
-
-		return empty($sources) ? array() : $sources;
-	}
-
-	/**
-	 * Delete a source from yuansfer.
-	 * @param string $source_id
-	 */
-	public function delete_source($source_id) {
-		if (!$this->get_id()) {
-			return false;
-		}
-
-		$response = WC_Yuansfer_API::request(array(), 'customers/' . $this->get_id() . '/sources/' . sanitize_text_field($source_id), 'DELETE');
-
-		$this->clear_cache();
-
-		if (empty($response->error)) {
-			do_action('wc_yuansfer_delete_source', $this->get_id(), $response);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Set default source in Yuansfer
-	 * @param string $source_id
-	 */
-	public function set_default_source($source_id) {
-		$response = WC_Yuansfer_API::request(array(
-			'default_source' => sanitize_text_field($source_id),
-		), 'customers/' . $this->get_id(), 'POST');
-
-		$this->clear_cache();
-
-		if (empty($response->error)) {
-			do_action('wc_yuansfer_set_default_source', $this->get_id(), $response);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Deletes caches for this users cards.
-	 */
-	public function clear_cache() {
-		delete_transient('yuansfer_sources_' . $this->get_id());
-		delete_transient('yuansfer_customer_' . $this->get_id());
-		$this->customer_data = array();
-	}
+    /**
+     * Recreates the customer for this user.
+     *
+     * @return string ID of the new Customer object.
+     */
+    private function recreate_customer() {
+        $this->delete_id_from_meta();
+        return $this->create_customer();
+    }
 }

@@ -59,7 +59,7 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
                 exit;
             }
 
-            $response = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, '_yuansfer_response', true) : $order->get_meta('_yuansfer_response', true);
+            $response = $order->get_meta('_yuansfer_response', true);
 
             if (!$response) {
 				WC_Yuansfer_Logger::log('Order response not found: ' . $order_id);
@@ -79,14 +79,9 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
 		$order = wc_get_order($order_id);
 
 		if ($order) {
-			if (WC_Yuansfer_Helper::is_pre_30()) {
-				delete_post_meta($order_id, '_yuansfer_response');
-				update_post_meta($order_id, '_yuansfer_reference', $reference);
-			} else {
-				$order->delete_meta_data('_yuansfer_response');
-				$order->update_meta_data('_yuansfer_reference', $reference);
-				$order->save();
-			}
+            $order->delete_meta_data('_yuansfer_response');
+            $order->update_meta_data('_yuansfer_reference', $reference);
+            $order->save();
 		}
 
 		return $order;
@@ -151,7 +146,6 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
 			return;
 		}
 
-        $order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
 		$status = $order->get_status();
 
 		if ('on-hold' !== $status && 'pending' !== $status) {
@@ -159,7 +153,7 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
         }
 
 		// Store other data such as fees
-		WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, '_transaction_id', $post['yuansferId']) : $order->set_transaction_id($post['yuansferId']);
+		$order->set_transaction_id($post['yuansferId']);
 
 		$order->payment_complete($post['yuansferId']);
 

@@ -34,5 +34,12 @@ return apply_filters('wc_yuansfer_creditcard_settings',
 			'default'     => __('Pay with Credit Card via Yuansfer.', 'woocommerce-yuansfer'),
 			'desc_tip'    => true,
 		),
+        'createaccount' => array(
+            'title'       => __('Create Account', 'woocommerce-yuansfer'),
+            'label'       => __('Enable create customer account to Credit Card channel', 'woocommerce-yuansfer'),
+            'type'        => 'checkbox',
+            'description' => '',
+            'default'     => 'yes',
+        ),
 	)
 );

@@ -4,9 +4,9 @@
 Contributors: yuansfer
 Tags: yuansfer, payment request, unionpay, alipay, wechat pay, woocommerce, automattic
 Requires at least: 4.4
-Tested up to: 4.9
+Tested up to: 5.4
 Requires PHP: 5.6
-Stable tag: 4.1.7
+Stable tag: 1.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Attributions: yuansfer-team
@@ -100,6 +100,10 @@ support@Yuansfer.com
 5. Using the Yuansfer checkout modal.
 
 == Changelog ==
+
+= 1.1.1 - 2020-07-19 =
+* Add create customer for credit card
+* WC require up to 3.0
 
 = 1.1.0 - 2020-07-14 =
 * Add payment method: credit card

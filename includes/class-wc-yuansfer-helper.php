@@ -24,9 +24,7 @@ class WC_Yuansfer_Helper {
 			return false;
 		}
 
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
-
-		return WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, self::META_NAME_YUANSFER_CURRENCY, true) : $order->get_meta(self::META_NAME_YUANSFER_CURRENCY, true);
+		return $order->get_meta(self::META_NAME_YUANSFER_CURRENCY, true);
 	}
 
 	/**
@@ -40,9 +38,7 @@ class WC_Yuansfer_Helper {
 			return false;
 		}
 
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
-
-		WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, self::META_NAME_YUANSFER_CURRENCY, $currency) : $order->update_meta_data(self::META_NAME_YUANSFER_CURRENCY, $currency);
+		$order->update_meta_data(self::META_NAME_YUANSFER_CURRENCY, $currency);
 	}
 
 	/**
@@ -56,13 +52,11 @@ class WC_Yuansfer_Helper {
 			return false;
 		}
 
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
-
-		$amount = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, self::META_NAME_FEE, true) : $order->get_meta(self::META_NAME_FEE, true);
+		$amount = $order->get_meta(self::META_NAME_FEE, true);
 
 		// If not found let's check for legacy name.
 		if (empty($amount)) {
-			$amount = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, self::LEGACY_META_NAME_FEE, true) : $order->get_meta(self::LEGACY_META_NAME_FEE, true);
+			$amount = $order->get_meta(self::LEGACY_META_NAME_FEE, true);
 
 			// If found update to new name.
 			if ($amount) {
@@ -84,9 +78,7 @@ class WC_Yuansfer_Helper {
 			return false;
 		}
 
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
-
-		WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, self::META_NAME_FEE, $amount) : $order->update_meta_data(self::META_NAME_FEE, $amount);
+		$order->update_meta_data(self::META_NAME_FEE, $amount);
 	}
 
 	/**
@@ -99,7 +91,7 @@ class WC_Yuansfer_Helper {
 			return false;
 		}
 
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
+		$order_id = $order->get_id();
 
 		delete_post_meta($order_id, self::META_NAME_FEE);
 		delete_post_meta($order_id, self::LEGACY_META_NAME_FEE);
@@ -116,13 +108,11 @@ class WC_Yuansfer_Helper {
 			return false;
 		}
 
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
-
-		$amount = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, self::META_NAME_NET, true) : $order->get_meta(self::META_NAME_NET, true);
+		$amount = $order->get_meta(self::META_NAME_NET, true);
 
 		// If not found let's check for legacy name.
 		if (empty($amount)) {
-			$amount = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, self::LEGACY_META_NAME_NET, true) : $order->get_meta(self::LEGACY_META_NAME_NET, true);
+			$amount = $order->get_meta(self::LEGACY_META_NAME_NET, true);
 
 			// If found update to new name.
 			if ($amount) {
@@ -144,9 +134,7 @@ class WC_Yuansfer_Helper {
 			return false;
 		}
 
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
-
-		WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, self::META_NAME_NET, $amount) : $order->update_meta_data(self::META_NAME_NET, $amount);
+		$order->update_meta_data(self::META_NAME_NET, $amount);
 	}
 
 	/**
@@ -159,7 +147,7 @@ class WC_Yuansfer_Helper {
 			return false;
 		}
 
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
+		$order_id = $order->get_id();
 
 		delete_post_meta($order_id, self::META_NAME_NET);
 		delete_post_meta($order_id, self::LEGACY_META_NAME_NET);
@@ -317,15 +305,6 @@ class WC_Yuansfer_Helper {
 	 */
 	public static function is_pre_orders_exists() {
 		return class_exists('WC_Pre_Orders_Order');
-	}
-
-	/**
-	 * Check if WC version is pre 3.0.
-	 *
-	 * @return bool
-	 */
-	public static function is_pre_30() {
-		return version_compare(WC_VERSION, '3.0.0', '<');
 	}
 
     /**

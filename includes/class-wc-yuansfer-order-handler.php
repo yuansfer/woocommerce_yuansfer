@@ -112,14 +112,9 @@ class WC_Yuansfer_Order_Handler extends WC_Yuansfer_Payment_Gateway {
 			if (!empty($response->error)) {
 				// Customer param wrong? The user may have been deleted on yuansfer's end. Remove customer_id. Can be retried without.
 				if ($this->is_no_such_customer_error($response->error)) {
-					if (WC_Yuansfer_Helper::is_pre_30()) {
-						delete_user_meta($order->customer_user, '_yuansfer_customer_id');
-						delete_post_meta($order_id, '_yuansfer_customer_id');
-					} else {
-						delete_user_meta($order->get_customer_id(), '_yuansfer_customer_id');
-						$order->delete_meta_data('_yuansfer_customer_id');
-						$order->save();
-					}
+                    delete_user_meta($order->get_customer_id(), '_yuansfer_customer_id');
+                    $order->delete_meta_data('_yuansfer_customer_id');
+                    $order->save();
 				}
 
 				if ($this->is_no_such_token_error($response->error) && $prepared_source->token_id) {
@@ -205,9 +200,9 @@ class WC_Yuansfer_Order_Handler extends WC_Yuansfer_Payment_Gateway {
 	public function capture_payment($order_id) {
 		$order = wc_get_order($order_id);
 
-		if ('yuansfer' === (WC_Yuansfer_Helper::is_pre_30() ? $order->payment_method : $order->get_payment_method())) {
-			$charge   = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, '_transaction_id', true) : $order->get_transaction_id();
-			$captured = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, '_yuansfer_charge_captured', true) : $order->get_meta('_yuansfer_charge_captured', true);
+		if ('yuansfer' === $order->get_payment_method()) {
+			$charge   = $order->get_transaction_id();
+			$captured = $order->get_meta('_yuansfer_charge_captured', true);
 
 			if ($charge && 'no' === $captured) {
 				$order_total = $order->get_total();
@@ -227,10 +222,10 @@ class WC_Yuansfer_Order_Handler extends WC_Yuansfer_Payment_Gateway {
 				} else {
 					/* translators: transaction id */
 					$order->add_order_note(sprintf(__('Yuansfer charge complete (Charge ID: %s)', 'woocommerce-yuansfer'), $result->id));
-					WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, '_yuansfer_charge_captured', 'yes') : $order->update_meta_data('_yuansfer_charge_captured', 'yes');
+					$order->update_meta_data('_yuansfer_charge_captured', 'yes');
 
 					// Store other data such as fees
-					WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, '_transaction_id', $result->id) : $order->set_transaction_id($result->id);
+					$order->set_transaction_id($result->id);
 
 					if (isset($result->balance_transaction) && isset($result->balance_transaction->fee)) {
 						// Fees and Net needs to both come from Yuansfer to be accurate as the returned
@@ -260,7 +255,7 @@ class WC_Yuansfer_Order_Handler extends WC_Yuansfer_Payment_Gateway {
 	public function cancel_payment($order_id) {
 		$order = wc_get_order($order_id);
 
-		if (strpos(WC_Yuansfer_Helper::is_pre_30() ? $order->payment_method : $order->get_payment_method(), 'yuansfer') === 0) {
+		if (strpos($order->get_payment_method(), 'yuansfer') === 0) {
 			$this->process_refund($order_id);
 
 			// This hook fires when admin manually changes order status to cancel.

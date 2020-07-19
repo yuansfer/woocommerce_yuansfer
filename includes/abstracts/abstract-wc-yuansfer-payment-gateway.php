@@ -332,18 +332,14 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 	 * Gets the saved customer id if exists.
 	 */
 	public function get_yuansfer_customer_id($order) {
-		$customer = get_user_meta(WC_Yuansfer_Helper::is_pre_30() ? $order->customer_user : $order->get_customer_id(), '_yuansfer_customer_id', true);
+		$customer = get_user_meta($order->get_customer_id(), '_yuansfer_customer_id', true);
 
 		if (empty($customer)) {
 			// Try to get it via the order.
-			if (WC_Yuansfer_Helper::is_pre_30()) {
-				return get_post_meta($order->id, '_yuansfer_customer_id', true);
-			} else {
-				return $order->get_meta('_yuansfer_customer_id', true);
-			}
-		} else {
-			return $customer;
+			return $order->get_meta('_yuansfer_customer_id', true);
 		}
+
+		return $customer;
     }
 
 	/**
@@ -354,7 +350,7 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 	 */
 	public function get_yuansfer_return_url($order = null) {
 		if (is_object($order)) {
-		    $order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
+		    $order_id = $order->get_id();
 			$args = array(
 				'utm_nooverride' => '1',
 				'order_id'       => $order_id,
@@ -386,18 +382,18 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 		$settings                          = get_option('woocommerce_yuansfer_settings', array());
 		$statement_descriptor              = ! empty($settings['statement_descriptor']) ? str_replace("'", '', $settings['statement_descriptor']) : '';
 		$post_data                         = array();
-		$post_data['currency']             = strtolower(WC_Yuansfer_Helper::is_pre_30() ? $order->get_order_currency() : $order->get_currency());
+		$post_data['currency']             = strtolower($order->get_currency());
 		$post_data['amount']               = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $post_data['currency']);
 		$post_data['description']          = sprintf(__('%1$s - Order %2$s', 'woocommerce-yuansfer'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES), $order->get_order_number());
-		$billing_email      = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_email : $order->get_billing_email();
-		$billing_first_name = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_first_name : $order->get_billing_first_name();
-		$billing_last_name  = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_last_name : $order->get_billing_last_name();
+		$billing_email      = $order->get_billing_email();
+		$billing_first_name = $order->get_billing_first_name();
+		$billing_last_name  = $order->get_billing_last_name();
 
 		if (!empty($billing_email) && apply_filters('wc_yuansfer_send_yuansfer_receipt', false)) {
 			$post_data['receipt_email'] = $billing_email;
 		}
 
-		switch (WC_Yuansfer_Helper::is_pre_30() ? $order->payment_method : $order->get_payment_method()) {
+		switch ($order->get_payment_method()) {
 			case 'yuansfer':
 				if (!empty($statement_descriptor)) {
 					$post_data['statement_descriptor'] = WC_Yuansfer_Helper::clean_statement_descriptor($statement_descriptor);
@@ -414,7 +410,7 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 			'order_id' => $order->get_order_number(),
 		);
 
-		if ($this->has_subscription(WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id())) {
+		if ($this->has_subscription($order->get_id())) {
 			$metadata += array(
 				'payment_type' => 'recurring',
 				'site_url'     => esc_url(get_site_url()),
@@ -447,12 +443,12 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 	public function process_response($response, $order) {
 		WC_Yuansfer_Logger::log('Processing response: ' . print_r($response, true));
 
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
+		$order_id = $order->get_id();
 
 		$captured = (isset($response->captured) && $response->captured) ? 'yes' : 'no';
 
 		// Store charge data.
-		WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, '_yuansfer_charge_captured', $captured) : $order->update_meta_data('_yuansfer_charge_captured', $captured);
+		$order->update_meta_data('_yuansfer_charge_captured', $captured);
 
 		// Store other data such as fees.
 		if (isset($response->balance_transaction) && isset($response->balance_transaction->fee)) {
@@ -475,13 +471,13 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 			 * take care of the status changes.
 			 */
 			if ('pending' === $response->status) {
-				$order_stock_reduced = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, '_order_stock_reduced', true) : $order->get_meta('_order_stock_reduced', true);
+				$order_stock_reduced = $order->get_meta('_order_stock_reduced', true);
 
 				if (!$order_stock_reduced) {
-					WC_Yuansfer_Helper::is_pre_30() ? $order->reduce_order_stock() : wc_reduce_stock_levels($order_id);
+					wc_reduce_stock_levels($order_id);
 				}
 
-				WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, '_transaction_id', $response->id) : $order->set_transaction_id($response->id);
+				$order->set_transaction_id($response->id);
 				/* translators: transaction id */
 				$order->update_status('on-hold', sprintf(__('Yuansfer charge awaiting payment: %s.', 'woocommerce-yuansfer'), $response->id));
 			}
@@ -500,10 +496,10 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 				throw new WC_Yuansfer_Exception(print_r($response, true), $localized_message);
 			}
 		} else {
-			WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, '_transaction_id', $response->id) : $order->set_transaction_id($response->id);
+			$order->set_transaction_id($response->id);
 
 			if ($order->has_status(array('pending', 'failed'))) {
-				WC_Yuansfer_Helper::is_pre_30() ? $order->reduce_order_stock() : wc_reduce_stock_levels($order_id);
+				wc_reduce_stock_levels($order_id);
 			}
 
 			/* translators: transaction id */
@@ -536,38 +532,39 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 	 * Get owner details.
 	 *
 	 * @param object $order
-	 * @return object $details
+	 * @return array $details
 	 */
 	public function get_owner_details($order) {
-		$billing_first_name = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_first_name : $order->get_billing_first_name();
-		$billing_last_name  = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_last_name : $order->get_billing_last_name();
+        $details = array(
+            'firstName'     => $order->get_billing_first_name(),
+            'lastName'      => $order->get_billing_last_name(),
+            'customerCode'  => $order->get_customer_id(),
+            'street'        => $order->get_billing_address_1() . ' ' . $order->get_billing_address_2(),
+            'city'          => $order->get_billing_city(),
+            'state'         => $order->get_billing_state(),
+            'country'       => $order->get_billing_country(),
+            'zip'           => $order->get_billing_postcode(),
+        );
 
-		$details = array();
-
-		$name  = $billing_first_name . ' ' . $billing_last_name;
-		$email = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_email : $order->get_billing_email();
-		$phone = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_phone : $order->get_billing_phone();
-
-		if (!empty($phone)) {
-			$details['phone'] = $phone;
-		}
-
-		if (!empty($name)) {
-			$details['name'] = $name;
-		}
+        $email   = $order->get_billing_email();
+		$phone   = $order->get_billing_phone();
+		$company = $order->get_billing_company();
 
 		if (!empty($email)) {
-			$details['email'] = $email;
-		}
+            $details['email'] = $email;
+        }
 
-		$details['address']['line1']       = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_address_1 : $order->get_billing_address_1();
-		$details['address']['line2']       = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_address_2 : $order->get_billing_address_2();
-		$details['address']['state']       = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_state : $order->get_billing_state();
-		$details['address']['city']        = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_city : $order->get_billing_city();
-		$details['address']['postal_code'] = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_postcode : $order->get_billing_postcode();
-		$details['address']['country']     = WC_Yuansfer_Helper::is_pre_30() ? $order->billing_country : $order->get_billing_country();
+		if (!empty($phone)) {
+            $details['phone'] = $phone;
+        }
 
-		return (object) apply_filters('wc_yuansfer_owner_details', $details, $order);
+		if (!empty($company)) {
+            $details['company'] = $company;
+        }
+
+
+
+		return $details;
 	}
 
 	/**
@@ -694,7 +691,7 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 		$source_object   = false;
 
 		if ($order) {
-			$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
+			$order_id = $order->get_id();
 
 			$yuansfer_customer_id = get_post_meta($order_id, '_yuansfer_customer_id', true);
 
@@ -702,14 +699,14 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 				$yuansfer_customer->set_id($yuansfer_customer_id);
 			}
 
-			$source_id = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, '_yuansfer_source_id', true) : $order->get_meta('_yuansfer_source_id', true);
+			$source_id = $order->get_meta('_yuansfer_source_id', true);
 
 			// Since 4.0.0, we changed card to source so we need to account for that.
 			if (empty($source_id)) {
-				$source_id = WC_Yuansfer_Helper::is_pre_30() ? get_post_meta($order_id, '_yuansfer_card_id', true) : $order->get_meta('_yuansfer_card_id', true);
+				$source_id = $order->get_meta('_yuansfer_card_id', true);
 
 				// Take this opportunity to update the key name.
-				WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, '_yuansfer_source_id', $source_id) : $order->update_meta_data('_yuansfer_source_id', $source_id);
+				$order->update_meta_data('_yuansfer_source_id', $source_id);
 
 				if (is_callable(array($order, 'save'))) {
 					$order->save();
@@ -743,23 +740,9 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 	 * @param stdClass $source Source information.
 	 */
 	public function save_source_to_order($order, $source) {
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
-
 		// Store source in the order.
 		if ($source->customer) {
-			if (WC_Yuansfer_Helper::is_pre_30()) {
-				update_post_meta($order_id, '_yuansfer_customer_id', $source->customer);
-			} else {
-				$order->update_meta_data('_yuansfer_customer_id', $source->customer);
-			}
-		}
-
-		if ($source->source) {
-			if (WC_Yuansfer_Helper::is_pre_30()) {
-				update_post_meta($order_id, '_yuansfer_source_id', $source->source);
-			} else {
-				$order->update_meta_data('_yuansfer_source_id', $source->source);
-			}
+			$order->update_meta_data('_yuansfer_customer_id', $source->customer);
 		}
 
 		if (is_callable(array($order, 'save'))) {
@@ -775,7 +758,7 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 	 * @param int $balance_transaction_id
 	 */
 	public function update_fees($order, $balance_transaction_id) {
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
+		$order_id = $order->get_id();
 
 		$balance_transaction = WC_Yuansfer_API::retrieve('balance/history/' . $balance_transaction_id);
 
@@ -813,7 +796,7 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 	 * @param int $balance_transaction_id
 	 */
 	public function update_currency($order, $balance_transaction_id) {
-		$order_id = WC_Yuansfer_Helper::is_pre_30() ? $order->id : $order->get_id();
+		$order_id = $order->get_id();
 
 		$balance_transaction = WC_Yuansfer_API::retrieve('balance/history/' . $balance_transaction_id);
 
@@ -848,13 +831,8 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
         $request['merchantNo'] = $this->merchant_no;
         $request['storeNo'] = $this->store_no;
 
-		if (WC_Yuansfer_Helper::is_pre_30()) {
-			$request['reference'] = get_post_meta($order_id, '_yuansfer_reference', true);
-			$order_currency = get_post_meta($order_id, '_order_currency', true);
-		} else {
-			$request['reference'] = $order->get_meta('_yuansfer_reference', true);
-			$order_currency = $order->get_currency();
-		}
+		$request['reference'] = $order->get_meta('_yuansfer_reference', true);
+		$order_currency = $order->get_currency();
 
 		if (!is_null($amount)) {
 			if (!$order_currency) {
@@ -877,7 +855,7 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 
 		$request = apply_filters('wc_yuansfer_refund_request', $request, $order);
 
-		$response = WC_Yuansfer_API::request($request, 'securepayRefund');
+		$response = WC_Yuansfer_API::request($request, 'app-data-search:refund');
 
 		if (empty($response->ret_code) || $response->ret_code !== '000100') {
 			WC_Yuansfer_Logger::log('Error: ' . $response->ret_msg);
@@ -887,7 +865,7 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 
 		if (!empty($response->result->refundTransactionId)) {
 		    $newId = $response->result->refundTransactionId;
-			WC_Yuansfer_Helper::is_pre_30() ? update_post_meta($order_id, '_yuansfer_refund_id', $newId) : $order->update_meta_data('_yuansfer_refund_id', $newId);
+			$order->update_meta_data('_yuansfer_refund_id', $newId);
 
 			/* translators: 1) dollar amount 2) transaction id 3) refund message */
 			$refund_message = sprintf(__('Refunded %1$s - Refund ID: %2$s - Reason: %3$s', 'woocommerce-yuansfer'), $amount, $newId, $reason);
