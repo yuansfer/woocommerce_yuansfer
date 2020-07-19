@@ -160,25 +160,6 @@ class WC_Yuansfer_API {
 			throw new WC_Yuansfer_Exception(print_r($response, true), __('There was a problem connecting to the Yuansfer API endpoint.', 'woocommerce-yuansfer'));
 		}
 
-		if ($api === 'secure-pay') {
-		    if (WC_Yuansfer_Helper::is_html((string)$response['body'])) {
-                return $response['body'];
-            }
-
-            WC_Yuansfer_Logger::log('Error Response: ' . print_r($response['body']) . PHP_EOL . PHP_EOL . 'Failed request: ' . print_r(array(
-                    'api'             => $api,
-                    'request'         => $request,
-                ), true ));
-
-            if (WC_Yuansfer_Helper::is_json((string)$response['body'])) {
-                $res_json = json_decode((string)$response['body']);
-                $errmsg = $res_json->ret_msg;
-            } else {
-                $errmsg = __('Internal Server Error.', 'woocommerce-yuansfer');
-            }
-            throw new WC_Yuansfer_Exception(print_r($response, true), $errmsg);
-        }
-
 		return json_decode($response['body']);
 	}
 

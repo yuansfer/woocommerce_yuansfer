@@ -145,20 +145,17 @@ class WC_Gateway_Yuansfer_Alipay extends WC_Yuansfer_Payment_Gateway {
 
 			$response = $this->create_source($order);
 
-			if (\strpos($response, 'error') === 0) {
-				$order->add_order_note($response);
+			if (empty($response->ret_code) || $response->ret_code !== '000100') {
+				$order->add_order_note($response->ret_msg);
 
-				throw new WC_Yuansfer_Exception($response, $response);
+				throw new WC_Yuansfer_Exception($response->ret_msg);
 			}
-
-			$order->update_meta_data('_yuansfer_response', $response);
-            $order->save();
 
 			WC_Yuansfer_Logger::log('Info: Redirecting to Alipay...');
 
 			return array(
 				'result'   => 'success',
-				'redirect' => WC_Yuansfer_Helper::get_redirect_url($order_id),
+				'redirect' => $response->result->cashierUrl,
 			);
 		} catch (WC_Yuansfer_Exception $e) {
 			wc_add_notice($e->getLocalizedMessage(), 'error');

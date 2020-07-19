@@ -101,7 +101,8 @@ support@Yuansfer.com
 
 == Changelog ==
 
-= 1.1.1 - 2020-07-19 =
+= 1.2.0 - 2020-07-19 =
+* Update to new version of Yuansfer API
 * Add create customer for credit card
 * WC require up to 3.0
 
