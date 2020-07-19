@@ -4,7 +4,7 @@
  * Plugin URI: https://wordpress.org/plugins/woo-yuansfer/
  * Description: Provides a Yuansfer Payment Gateway
  * Author: Yuansfer
- * Author URI: https://www.yuansfer-com/
+ * Author URI: https://www.yuansfer.com/
  * Version: 1.2.0
  * WC requires at least: 3.0
  * WC tested up to: 4.3

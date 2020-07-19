@@ -144,7 +144,7 @@ class WC_Gateway_Yuansfer_Creditcard extends WC_Yuansfer_Payment_Gateway {
 
             $create_account = $this->get_option('createaccount') === 'yes';
 
-            if ($create_account === 'yes') {
+            if ($create_account) {
                 $customer_id     = $order->get_customer_id();
                 $customer = new WC_Yuansfer_Customer($customer_id);
 
