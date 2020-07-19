@@ -158,7 +158,7 @@ class WC_Yuansfer_Webhook_Handler extends WC_Yuansfer_Payment_Gateway {
 		$order->payment_complete($post['yuansferId']);
 
 		/* translators: transaction id */
-		$order->add_order_note(sprintf(__('Yuansfer charge complete (Charge ID: %s)', 'woocommerce-yuansfer'), $post['yuansferId']));
+		$order->add_order_note(sprintf(__('Yuansfer payment complete (Transaction ID: %s)', 'woocommerce-yuansfer'), $post['yuansferId']));
 
 		if (is_callable(array($order, 'save'))) {
 			$order->save();
