@@ -11,12 +11,15 @@ if (!defined('ABSPATH')) {
  */
 class WC_Gateway_Yuansfer_Creditcard extends WC_Yuansfer_Payment_Gateway {
 
+	private $create_account = true;
+
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		$this->id                   = 'yuansfer_creditcard';
 		$this->method_title         = __('Yuansfer Credit Card', 'woocommerce-yuansfer');
+		$this->create_account       = $this->get_option('createaccount') === 'yes';
 
 		parent::__construct();
 	}
@@ -103,7 +106,7 @@ class WC_Gateway_Yuansfer_Creditcard extends WC_Yuansfer_Payment_Gateway {
         $post_data['storeNo']     = $this->store_no;
         $currency = strtoupper($currency);
         if (in_array($currency, ['RMB', 'CNY'], true)) {
-            $post_data['rmbAmount']      = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
+            $post_data['rmbAmount'] = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
         } else {
             $post_data['amount'] = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
         }
@@ -112,8 +115,11 @@ class WC_Gateway_Yuansfer_Creditcard extends WC_Yuansfer_Payment_Gateway {
         $post_data['reference']   = $order_id . ':' . uniqid('creditcard:');
         $post_data['ipnUrl']      = WC_Yuansfer_Helper::get_webhook_url();
         $post_data['callbackUrl'] = $return_url;
-        $post_data['terminal']    = 'ONLINE';
-        $post_data['customerNo']  = $order->get_meta('_yuansfer_customer_id');
+		$post_data['terminal']    = 'ONLINE';
+
+		if ($this->create_account) {
+			$post_data['customerNo']  = $order->get_meta('_yuansfer_customer_id');
+		}
 
         if (!empty($this->statement_descriptor)) {
             $post_data['description'] = WC_Yuansfer_Helper::clean_statement_descriptor($this->statement_descriptor);
@@ -142,9 +148,7 @@ class WC_Gateway_Yuansfer_Creditcard extends WC_Yuansfer_Payment_Gateway {
             // This will throw exception if not valid.
             $this->validate_minimum_order_amount($order);
 
-            $create_account = $this->get_option('createaccount') === 'yes';
-
-            if ($create_account) {
+            if ($this->create_account) {
                 $customer_id     = $order->get_customer_id();
                 $customer = new WC_Yuansfer_Customer($customer_id);
 

@@ -159,6 +159,7 @@ class WC_Yuansfer_Customer {
             throw new WC_Yuansfer_Exception( 'id_required_to_update_user', __( 'Attempting to update a Yuansfer customer without a customer ID.', 'woocommerce-gateway-yuansfer' ) );
         }
 
+        $args['customerNo'] = $this->get_id();
         $args     = $this->generate_customer_request($args);
         $response = WC_Yuansfer_API::request( $args, 'creditpay:customer/edit' );
 
@@ -167,7 +168,7 @@ class WC_Yuansfer_Customer {
                 // This can happen when switching the main Yuansfer account or importing users from another site.
                 // If not already retrying, recreate the customer and then try updating it again.
                 $this->recreate_customer();
-                return $this->update_customer( true );
+                return $this->update_customer( $args, true );
             }
 
             throw new WC_Yuansfer_Exception( $response->ret_msg );
