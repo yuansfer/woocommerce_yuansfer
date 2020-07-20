@@ -6,7 +6,7 @@ Tags: yuansfer, payment request, unionpay, alipay, wechat pay, woocommerce, auto
 Requires at least: 4.4
 Tested up to: 5.4
 Requires PHP: 5.6
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Attributions: yuansfer-team
@@ -100,6 +100,10 @@ support@Yuansfer.com
 5. Using the Yuansfer checkout modal.
 
 == Changelog ==
+
+= 1.2.1 - 2020-07-20 =
+* Fix retry error of update customer
+* Skip customerNo when disable create account of credit card
 
 = 1.2.0 - 2020-07-19 =
 * Update to new version of Yuansfer API
