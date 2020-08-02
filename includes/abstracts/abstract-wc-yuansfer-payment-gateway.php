@@ -89,15 +89,6 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
             'USD',
             'CNY',
             'RMB',
-            // 'CAD',
-            // 'EUR',
-            // 'AUD',
-            // 'GBP',
-            // 'HKD',
-            // 'JPY',
-            // 'NZD',
-            // 'SGD',
-
         ));
     }
 
