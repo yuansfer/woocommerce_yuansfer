@@ -85,7 +85,7 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
      * @return array
      */
     public function get_supported_currency() {
-        return apply_filters('wc_yuansfer_alipay_supported_currencies', array(
+        return apply_filters('wc_yuansfer_supported_currencies', array(
             'USD',
             'CNY',
             'RMB',
