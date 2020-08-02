@@ -87,14 +87,16 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
     public function get_supported_currency() {
         return apply_filters('wc_yuansfer_alipay_supported_currencies', array(
             'USD',
-            'CAD',
-            //			'EUR',
-            //			'AUD',
-            //			'GBP',
-            //			'HKD',
-            //			'JPY',
-            //			'NZD',
-            //			'SGD',
+            'CNY',
+            'RMB',
+            // 'CAD',
+            // 'EUR',
+            // 'AUD',
+            // 'GBP',
+            // 'HKD',
+            // 'JPY',
+            // 'NZD',
+            // 'SGD',
 
         ));
     }
