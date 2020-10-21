@@ -38,8 +38,6 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 
     public $merchant_no;
     public $store_no;
-    public $manager_no;
-    public $manager_password;
 
     /**
      * Constructor
@@ -67,9 +65,6 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
         $this->merchant_no          = !empty($main_settings['merchant_no']) ? $main_settings['merchant_no'] : '';
         $this->store_no             = !empty($main_settings['store_no']) ? $main_settings['store_no'] : '';
         $this->statement_descriptor = !empty($main_settings['statement_descriptor']) ? $main_settings['statement_descriptor'] : '';
-
-        $this->manager_no           = !empty($main_settings['manager_no']) ? $main_settings['manager_no'] : '';
-        $this->manager_password     = !empty($main_settings['manager_password']) ? $main_settings['manager_password'] : '';
 
         if ($this->testmode) {
             $this->api_token        = !empty($main_settings['test_api_token']) ? $main_settings['test_api_token'] : '';
@@ -838,11 +833,6 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 				$request['amount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $order_currency);
 			}
 		}
-
-		if (!empty($this->manager_no)) {
-		    $request['managerAccountNo'] = $this->manager_no;
-		    $request['password'] = $this->manager_password;
-        }
 
 		WC_Yuansfer_Logger::log("Info: Beginning refund for order {$order->get_transaction_id()} for the amount of {$amount}");
 
