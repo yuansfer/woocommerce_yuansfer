@@ -101,7 +101,7 @@ support@Yuansfer.com
 
 == Changelog ==
 
-= 2.0.0 - 2020-10-22 =
+= 2.0.0 - 2020-11-06 =
 * Change version for consistency
 * Add mobile detect
 
