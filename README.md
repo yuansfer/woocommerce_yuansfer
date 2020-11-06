@@ -6,7 +6,7 @@ Tags: yuansfer, payment request, unionpay, alipay, wechat pay, woocommerce, auto
 Requires at least: 4.4
 Tested up to: 5.4
 Requires PHP: 5.6
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Attributions: yuansfer-team
@@ -100,6 +100,9 @@ support@Yuansfer.com
 5. Using the Yuansfer checkout modal.
 
 == Changelog ==
+
+= 2.0.1 - 2020-11-06 =
+* Fix WeChat Pay terminal settings
 
 = 2.0.0 - 2020-11-06 =
 * Change version for consistency
