@@ -81,8 +81,8 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
     protected function get_terminal($wechat = false)
     {
         if ($this->detect->isMobile()) {
-            if ($wechat && $this->detect->is('WeChat')) {
-                return 'MWEB';
+            if ($wechat) {
+                return $this->detect->is('WeChat') ? 'WAP' : 'MWEB';
             }
 
             return 'WAP';
