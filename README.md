@@ -105,7 +105,7 @@ support@Yuansfer.com
 * Change version for consistency
 * Add mobile detect
 
-= 1.2.4 - 2020-10-22 =
+= 1.2.3 - 2020-10-22 =
 * Remove useless parameters for refund
 
 = 1.2.2 - 2020-08-02 =
