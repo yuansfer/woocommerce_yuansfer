@@ -6,7 +6,7 @@ Tags: yuansfer, payment request, unionpay, alipay, wechat pay, woocommerce, auto
 Requires at least: 4.4
 Tested up to: 5.4
 Requires PHP: 5.6
-Stable tag: 1.2.3
+Stable tag: 2.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Attributions: yuansfer-team
@@ -101,7 +101,11 @@ support@Yuansfer.com
 
 == Changelog ==
 
-= 1.2.3 - 2020-10-22 =
+= 2.0.0 - 2020-10-22 =
+* Change version for consistency
+* Add mobile detect
+
+= 1.2.4 - 2020-10-22 =
 * Remove useless parameters for refund
 
 = 1.2.2 - 2020-08-02 =

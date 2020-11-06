@@ -115,7 +115,7 @@ class WC_Gateway_Yuansfer_Creditcard extends WC_Yuansfer_Payment_Gateway {
         $post_data['reference']   = $order_id . ':' . uniqid('creditcard:');
         $post_data['ipnUrl']      = WC_Yuansfer_Helper::get_webhook_url();
         $post_data['callbackUrl'] = $return_url;
-		$post_data['terminal']    = 'ONLINE';
+		$post_data['terminal']    = $this->get_terminal();
 
 		if ($this->create_account) {
 			$post_data['customerNo']  = $order->get_meta('_yuansfer_customer_id');

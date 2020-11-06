@@ -5,7 +5,7 @@
  * Description: Provides a Yuansfer Payment Gateway
  * Author: Yuansfer
  * Author URI: https://www.yuansfer.com/
- * Version: 1.2.3
+ * Version: 2.0.0
  * WC requires at least: 3.0
  * WC tested up to: 4.3
  */
@@ -34,7 +34,7 @@ function woocommerce_yuansfer_init()
     /**
      * Required minimums and constants
      */
-    define('WC_YUANSFER_VERSION', '1.2.0');
+    define('WC_YUANSFER_VERSION', '2.0.0');
     define('WC_YUANSFER_MIN_PHP_VER', '5.6.0');
     define('WC_YUANSFER_MIN_WC_VER', '3.0');
     define('WC_YUANSFER_MAIN_FILE', __FILE__);
@@ -115,6 +115,7 @@ class WC_Yuansfer
         require_once __DIR__ . '/includes/class-wc-yuansfer-order-handler.php';
         require_once __DIR__ . '/includes/class-wc-yuansfer-payment-tokens.php';
         require_once __DIR__ . '/includes/class-wc-yuansfer-customer.php';
+        require_once __DIR__ . '/includes/class-wc-yuansfer-mobile-detect.php';
 
         if (is_admin()) {
             require_once __DIR__ . '/includes/admin/class-wc-yuansfer-admin-notices.php';

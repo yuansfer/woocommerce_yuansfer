@@ -39,6 +39,8 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
     public $merchant_no;
     public $store_no;
 
+    protected $detect;
+
     /**
      * Constructor
      */
@@ -72,6 +74,21 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('wp_enqueue_scripts', array($this, 'payment_scripts'));
+
+        $this->detect = new WC_Yuansfer_Mobile_Detect();
+    }
+
+    protected function get_terminal($wechat = false)
+    {
+        if ($this->detect->isMobile()) {
+            if ($wechat && $this->detect->is('WeChat')) {
+                return 'MWEB';
+            }
+
+            return 'WAP';
+        }
+
+        return 'ONLINE';
     }
 
     /**

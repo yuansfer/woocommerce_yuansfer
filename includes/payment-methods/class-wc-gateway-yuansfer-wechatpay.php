@@ -112,7 +112,7 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
         $post_data['reference']   = $order_id . ':' . uniqid('wechatpay:');
         $post_data['ipnUrl']      = WC_Yuansfer_Helper::get_webhook_url();
         $post_data['callbackUrl'] = $return_url;
-        $post_data['terminal']    = 'ONLINE';
+        $post_data['terminal']    = $this->get_terminal(true);
 
         if (!empty($this->statement_descriptor)) {
             $post_data['description'] = WC_Yuansfer_Helper::clean_statement_descriptor($this->statement_descriptor);
