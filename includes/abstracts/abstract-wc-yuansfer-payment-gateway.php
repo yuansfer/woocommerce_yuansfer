@@ -100,7 +100,6 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
         return apply_filters('wc_yuansfer_supported_currencies', array(
             'USD',
             'CNY',
-            'RMB',
         ));
     }
 
@@ -837,25 +836,22 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
         $request['storeNo'] = $this->store_no;
 
 		$request['reference'] = $order->get_meta('_yuansfer_reference', true);
-		$order_currency = $order->get_currency();
+		$currency = $order->get_currency();
+        if (!$currency) {
+            $currency = get_woocommerce_currency();
+        }
+        $request['currency'] = $currency;
 
-		if (!is_null($amount)) {
-			if (!$order_currency) {
-				$order_currency = get_woocommerce_currency();
-			}
-
-			if (in_array(strtoupper($order_currency), ['RMB', 'CNY'], true)) {
-                		$request['rmbAmount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $order_currency);
-			} else {
-				$request['amount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $order_currency);
-			}
+		if (is_null($amount)) {
+			$amount = $order->get_total();
 		}
+        $request['refundAmount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $currency);
 
 		WC_Yuansfer_Logger::log("Info: Beginning refund for order {$order->get_transaction_id()} for the amount of {$amount}");
 
 		$request = apply_filters('wc_yuansfer_refund_request', $request, $order);
 
-		$response = WC_Yuansfer_API::request($request, 'app-data-search:refund');
+		$response = WC_Yuansfer_API::request($request, WC_Yuansfer_API::REFUND);
 
 		if (empty($response->ret_code) || $response->ret_code !== '000100') {
 			WC_Yuansfer_Logger::log('Error: ' . $response->ret_msg);

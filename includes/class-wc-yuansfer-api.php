@@ -11,7 +11,11 @@ if (!defined('ABSPATH')) {
 class WC_Yuansfer_API {
 
     const KEY = 'verifySign';
-    const VERSION = 'v2';
+
+    const SECURE_PAY = '/online/v3/secure-pay';
+    const REFUND = '/app-data-search/v3/refund';
+    const CUSTOMER_ADD = '/creditpay/v2/customer/add';
+    const CUSTOMER_EDIT = '/creditpay/v2/customer/edit';
 
     /**
 	 * Yuansfer API URL
@@ -141,10 +145,8 @@ class WC_Yuansfer_API {
 
 		$request = self::append_sign($request);
 
-		list($base, $api) = explode(':', $api);
-
 		$response = wp_safe_remote_post(
-			self::get_url() . '/' . $base . '/' . self::VERSION . '/' . $api,
+			self::get_url() . $api,
 			array(
 				'method'  => $method,
 				'body'    => apply_filters( 'woocommerce_yuansfer_request_body', $request, $api ),

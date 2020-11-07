@@ -177,17 +177,24 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
         $post_data['merchantNo']  = $this->merchant_no;
         $post_data['storeNo']     = $this->store_no;
         $currency = strtoupper($currency);
-        if (in_array($currency, ['RMB', 'CNY'], true)) {
-            $post_data['rmbAmount']      = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
-        } else {
-            $post_data['amount'] = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
+
+        $supportedCurrency = $this->get_supported_currency();
+        if (!in_array($currency, $supportedCurrency, true)) {
+            throw new WC_Yuansfer_Exception('Union Pay only support "' . implode('", "', $supportedCurrency). '" for currency');
         }
-        $post_data['currency']    = 'USD';
-        $post_data['vendor']      = 'unionpay';
-        $post_data['reference']   = $order_id . ':' . uniqid('unionpay:');
-        $post_data['ipnUrl']      = WC_Yuansfer_Helper::get_webhook_url();
-        $post_data['callbackUrl'] = $return_url;
-        $post_data['terminal']    = 'ONLINE';
+
+        $post_data['amount']         = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
+        $post_data['currency']       = $currency;
+        $post_data['settleCurrency'] = 'USD';
+        $post_data['vendor']         = 'unionpay';
+        $post_data['reference']      = $order_id . ':' . uniqid('unionpay:');
+        $post_data['ipnUrl']         = WC_Yuansfer_Helper::get_webhook_url();
+        $post_data['callbackUrl']    = $return_url;
+        $post_data['terminal']       = $this->get_terminal();
+
+        if ($post_data['terminal'] === 'WAP') {
+            $post_data['osType'] = $this->detect->is('iOS') ? 'IOS' : 'ANDROID';
+        }
 
         if (!empty($this->statement_descriptor)) {
             $post_data['description'] = WC_Yuansfer_Helper::clean_statement_descriptor($this->statement_descriptor);
@@ -195,7 +202,7 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
 
         WC_Yuansfer_Logger::log('Info: Begin creating UnionPay source');
 
-        return WC_Yuansfer_API::request(apply_filters('wc_yuansfer_unionpay_source', $post_data, $order), 'online:secure-pay');
+        return WC_Yuansfer_API::request(apply_filters('wc_yuansfer_unionpay_source', $post_data, $order), WC_Yuansfer_API::SECURE_PAY);
     }
 
 	/**

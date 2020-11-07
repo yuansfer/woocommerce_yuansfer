@@ -88,6 +88,12 @@ class WC_Gateway_Yuansfer_Creditcard extends WC_Yuansfer_Payment_Gateway {
 		echo '</div>';
 	}
 
+    public function get_supported_currency() {
+        return apply_filters('wc_yuansfer_supported_currencies', array(
+            'USD'
+        ));
+    }
+
 	/**
 	 * Creates the source for charge.
 	 *
@@ -105,17 +111,24 @@ class WC_Gateway_Yuansfer_Creditcard extends WC_Yuansfer_Payment_Gateway {
         $post_data['merchantNo']  = $this->merchant_no;
         $post_data['storeNo']     = $this->store_no;
         $currency = strtoupper($currency);
-        if (in_array($currency, ['RMB', 'CNY'], true)) {
-            $post_data['rmbAmount'] = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
-        } else {
-            $post_data['amount'] = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
+        $supportedCurrency = $this->get_supported_currency();
+        if (in_array($currency, $supportedCurrency, true)) {
+            throw new WC_Yuansfer_Exception('Credit Card only support "' . implode('", "', $supportedCurrency). '" for currency');
         }
-        $post_data['currency']    = 'USD';
-        $post_data['vendor']      = 'creditcard';
-        $post_data['reference']   = $order_id . ':' . uniqid('creditcard:');
-        $post_data['ipnUrl']      = WC_Yuansfer_Helper::get_webhook_url();
-        $post_data['callbackUrl'] = $return_url;
-		$post_data['terminal']    = $this->get_terminal();
+
+        $post_data['amount']            = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
+        $post_data['currency']          = $currency;
+        $post_data['settleCurrency']    = 'USD';
+        $post_data['vendor']            = 'creditcard';
+        $post_data['reference']         = $order_id . ':' . uniqid('creditcard:');
+        $post_data['ipnUrl']            = WC_Yuansfer_Helper::get_webhook_url();
+        $post_data['callbackUrl']       = $return_url;
+		$post_data['terminal']          = $this->get_terminal();
+		$post_data['creditType']        = 'normal';
+
+        if ($post_data['terminal'] === 'WAP') {
+            $post_data['osType'] = $this->detect->is('iOS') ? 'IOS' : 'ANDROID';
+        }
 
 		if ($this->create_account) {
 			$post_data['customerNo']  = $order->get_meta('_yuansfer_customer_id');
@@ -127,7 +140,7 @@ class WC_Gateway_Yuansfer_Creditcard extends WC_Yuansfer_Payment_Gateway {
 
         WC_Yuansfer_Logger::log('Info: Begin creating Credit Card source');
 
-        return WC_Yuansfer_API::request(apply_filters('wc_yuansfer_creditcard_source', $post_data, $order), 'online:secure-pay');
+        return WC_Yuansfer_API::request(apply_filters('wc_yuansfer_creditcard_source', $post_data, $order), WC_Yuansfer_API::SECURE_PAY);
     }
 
 	/**

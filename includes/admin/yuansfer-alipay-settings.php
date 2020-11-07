@@ -34,5 +34,16 @@ return apply_filters('wc_yuansfer_alipay_settings',
 			'default'     => __('Pay with Alipay via Yuansfer', 'woocommerce-yuansfer'),
 			'desc_tip'    => true,
 		),
+        'settle_currency' => array(
+            'title'       => __('Settle currency for CNY', 'woocommerce-yuansfer'),
+            'type'        => 'select',
+            'description' => __('If the payment currency is "CNY", which currency is used for settlement.', 'woocommerce-yuansfer'),
+            'default'     => 'USD',
+            'desc_tip'    => true,
+            'options'     => array(
+                'USD' => 'USD',
+                'GBP' => 'GBP',
+            ),
+        ),
 	)
 );

@@ -123,7 +123,7 @@ class WC_Yuansfer_Customer {
     public function create_customer($args) {
         $args['groupCode'] = 'HPP';
         $args     = $this->generate_customer_request( $args );
-        $response = WC_Yuansfer_API::request( $args, 'creditpay:customer/add' );
+        $response = WC_Yuansfer_API::request( $args, WC_Yuansfer_API::CUSTOMER_ADD );
 
         if ( empty( $response->ret_code ) || $response->ret_code !== '000100' ) {
             throw new WC_Yuansfer_Exception( print_r( $response, true ), $response->error->message );
@@ -161,7 +161,7 @@ class WC_Yuansfer_Customer {
 
         $args['customerNo'] = $this->get_id();
         $args     = $this->generate_customer_request($args);
-        $response = WC_Yuansfer_API::request( $args, 'creditpay:customer/edit' );
+        $response = WC_Yuansfer_API::request( $args, WC_Yuansfer_API::CUSTOMER_EDIT );
 
         if ( empty( $response->ret_code ) || $response->ret_code !== '000100' ) {
             if ( ! $is_retry && $this->is_no_such_customer_error( $response->ret_msg ) ) {
