@@ -71,6 +71,8 @@ class WC_Yuansfer_Admin_Notices {
 			'Alipay'        => 'WC_Gateway_Yuansfer_Alipay',
 			'WechatPay'     => 'WC_Gateway_Yuansfer_Wechatpay',
 			'CreditCard'    => 'WC_Gateway_Yuansfer_Creditcard',
+            'PayPal'        => 'WC_Gateway_Yuansfer_Paypal',
+            'Venmo'         => 'WC_Gateway_Yuansfer_Venmo',
 		);
 	}
 
@@ -193,6 +195,12 @@ class WC_Yuansfer_Admin_Notices {
 				case 'CreditCard':
 					update_option('wc_yuansfer_show_creditcard_notice', 'no');
 					break;
+                case 'PayPal':
+                    update_option('wc_yuansfer_show_paypal_notice', 'no');
+                    break;
+                case 'Venmo':
+                    update_option('wc_yuansfer_show_venmo_notice', 'no');
+                    break;
 			}
 		}
 	}

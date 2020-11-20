@@ -112,6 +112,8 @@ class WC_Yuansfer
         require_once __DIR__ . '/includes/payment-methods/class-wc-gateway-yuansfer-alipay.php';
         require_once __DIR__ . '/includes/payment-methods/class-wc-gateway-yuansfer-wechatpay.php';
         require_once __DIR__ . '/includes/payment-methods/class-wc-gateway-yuansfer-creditcard.php';
+        require_once __DIR__ . '/includes/payment-methods/class-wc-gateway-yuansfer-paypal.php';
+        require_once __DIR__ . '/includes/payment-methods/class-wc-gateway-yuansfer-venmo.php';
         require_once __DIR__ . '/includes/class-wc-yuansfer-order-handler.php';
         require_once __DIR__ . '/includes/class-wc-yuansfer-payment-tokens.php';
         require_once __DIR__ . '/includes/class-wc-yuansfer-customer.php';
@@ -182,6 +184,8 @@ class WC_Yuansfer
         $methods[] = 'WC_Gateway_Yuansfer_Alipay';
         $methods[] = 'WC_Gateway_Yuansfer_Wechatpay';
         $methods[] = 'WC_Gateway_Yuansfer_Creditcard';
+        $methods[] = 'WC_Gateway_Yuansfer_Paypal';
+        $methods[] = 'WC_Gateway_Yuansfer_Venmo';
         return $methods;
     }
 
@@ -194,13 +198,17 @@ class WC_Yuansfer
             $sections['yuansfer'],
             $sections['yuansfer_alipay'],
             $sections['yuansfer_wechatpay'],
-            $sections['yuansfer_creditcard']
+            $sections['yuansfer_creditcard'],
+            $sections['yuansfer_paypal'],
+            $sections['yuansfer_venmo']
         );
 
         $sections['yuansfer'] = __('Yuansfer UnionPay', 'woocommerce-yuansfer');
         $sections['yuansfer_alipay'] = __('Yuansfer Alipay', 'woocommerce-yuansfer');
         $sections['yuansfer_wechatpay'] = __('Yuansfer WeChat Pay', 'woocommerce-yuansfer');
         $sections['yuansfer_creditcard'] = __('Yuansfer Credit Card', 'woocommerce-yuansfer');
+        $sections['yuansfer_paypal'] = __('Yuansfer PayPal', 'woocommerce-yuansfer');
+        $sections['yuansfer_venmo'] = __('Yuansfer Venmo', 'woocommerce-yuansfer');
 
         return $sections;
     }

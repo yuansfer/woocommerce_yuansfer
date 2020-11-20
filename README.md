@@ -2,7 +2,7 @@
 
 ```
 Contributors: yuansfer
-Tags: yuansfer, payment request, unionpay, alipay, wechat pay, woocommerce, automattic
+Tags: yuansfer, payment request, unionpay, alipay, wechat pay, credit card, paypal, venmo, woocommerce, automattic
 Requires at least: 4.4
 Tested up to: 5.4
 Requires PHP: 5.6
@@ -103,6 +103,7 @@ support@Yuansfer.com
 
 = 3.0.0 - 2020-11-07 =
 * Update to v3 API
+* Add payment method: paypal, venmo  
 
 = 2.0.1 - 2020-11-06 =
 * Fix WeChat Pay terminal settings

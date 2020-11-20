@@ -14,16 +14,24 @@ form#order_review #wc-yuansfer_sepa-form { padding: 10px; }
 #add_payment_method #payment .payment_method_yuansfer_alipay { position: relative; }
 #add_payment_method #payment .payment_method_yuansfer_wechatpay { position: relative; }
 #add_payment_method #payment .payment_method_yuansfer_creditcard { position: relative; }
+#add_payment_method #payment .payment_method_yuansfer_paypal { position: relative; }
+#add_payment_method #payment .payment_method_yuansfer_venmo { position: relative; }
 #add_payment_method #payment input#payment_method_yuansfer { position: absolute; top: 6px; }
 #add_payment_method #payment input#payment_method_yuansfer_alipay { position: absolute; top: 6px; }
 #add_payment_method #payment input#payment_method_yuansfer_wechatpay { position: absolute; top: 6px; }
 #add_payment_method #payment input#payment_method_yuansfer_creditcard { position: absolute; top: 6px; }
+#add_payment_method #payment input#payment_method_yuansfer_paypal { position: absolute; top: 6px; }
+#add_payment_method #payment input#payment_method_yuansfer_venmo { position: absolute; top: 6px; }
 #add_payment_method #payment .payment_method_yuansfer label[for=payment_method_yuansfer] { display: block; padding-left: 20px; }
 #add_payment_method #payment .payment_method_yuansfer_alipay label[for=payment_method_yuansfer_alipay] { display: block; padding-left: 20px; }
 #add_payment_method #payment .payment_method_yuansfer_wechatpay label[for=payment_method_yuansfer_wechatpay] { display: block; padding-left: 20px; }
 #add_payment_method #payment .payment_method_yuansfer_creditcard label[for=payment_method_yuansfer_creditcard] { display: block; padding-left: 20px; }
+#add_payment_method #payment .payment_method_yuansfer_paypal label[for=payment_method_yuansfer_paypal] { display: block; padding-left: 20px; }
+#add_payment_method #payment .payment_method_yuansfer_venmo label[for=payment_method_yuansfer_venmo] { display: block; padding-left: 20px; }
 #add_payment_method #payment ul.payment_methods li img.yuansfer-icon { float: right; max-width: 40px; padding-left: 3px; margin: 0; }
 #add_payment_method #payment ul.payment_methods li img.yuansfer-alipay-icon { max-width: 50px; }
 #add_payment_method #payment ul.payment_methods li img.yuansfer-wechatpay-icon { max-width: 50px; }
 #add_payment_method #payment ul.payment_methods li img.yuansfer-creditcard-icon { max-width: 50px; }
+#add_payment_method #payment ul.payment_methods li img.yuansfer-paypal-icon { max-width: 50px; }
+#add_payment_method #payment ul.payment_methods li img.yuansfer-venmo-icon { max-width: 50px; }
 #add_payment_method #payment ul.payment_methods .yuansfer-card-group { position: relative; }

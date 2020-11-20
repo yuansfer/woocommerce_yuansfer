@@ -2,5 +2,7 @@
 #add_payment_method #payment .payment_method_yuansfer_alipay label[for=payment_method_yuansfer_alipay] { display: block; padding-left: 20px; }
 #add_payment_method #payment .payment_method_yuansfer_wechatpay label[for=payment_method_yuansfer_wechatpay] { display: block; padding-left: 20px; }
 #add_payment_method #payment .payment_method_yuansfer_creditcard label[for=payment_method_yuansfer_creditcard] { display: block; padding-left: 20px; }
+#add_payment_method #payment .payment_method_yuansfer_paypal label[for=payment_method_yuansfer_paypal] { display: block; padding-left: 20px; }
+#add_payment_method #payment .payment_method_yuansfer_venmo label[for=payment_method_yuansfer_venmo] { display: block; padding-left: 20px; }
 
 .woocommerce-PaymentMethods li { list-style-type: none; }

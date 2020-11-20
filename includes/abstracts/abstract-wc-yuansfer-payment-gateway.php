@@ -302,7 +302,9 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 			'unionpay'      => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/unionpay.svg" class="yuansfer-unionpay-icon yuansfer-icon" alt="UnionPay" width="42" />',
 			'alipay'        => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/alipay.svg" class="yuansfer-alipay-icon yuansfer-icon" alt="Alipay" width="52" />',
 			'wechatpay'     => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/wechatpay.png" class="yuansfer-wechatpay-icon yuansfer-icon" alt="Wechat Pay" width="90" />',
-			'creditcard'     => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/creditcard.png" class="yuansfer-wechatpay-icon yuansfer-icon" alt="Credit Card" width="90" />',
+			'creditcard'    => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/creditcard.png" class="yuansfer-creditcard-icon yuansfer-icon" alt="Credit Card" width="90" />',
+            'paypal'        => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/paypal.svg" class="yuansfer-paypal-icon yuansfer-icon" alt="PayPal" width="90" />',
+            'venmo'         => '<img src="' . WC_YUANSFER_PLUGIN_URL . '/assets/images/venmo.svg" class="yuansfer-venmo-icon yuansfer-icon" alt="Venmo" width="90" />',
 		) );
 	}
 

@@ -4,19 +4,19 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Class that handles WeChat Pay payment method.
+ * Class that handles PayPal payment method.
  *
  * @extends WC_Gateway_Yuansfer
  *
  */
-class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
+class WC_Gateway_Yuansfer_Paypal extends WC_Yuansfer_Payment_Gateway {
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->id                   = 'yuansfer_wechatpay';
-		$this->method_title         = __('Yuansfer WeChat Pay', 'woocommerce-yuansfer');
+		$this->id                   = 'yuansfer_paypal';
+		$this->method_title         = __('Yuansfer PayPal', 'woocommerce-yuansfer');
 
 		parent::__construct();
 	}
@@ -31,7 +31,7 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
 
 		$icons_str = '';
 
-		$icons_str .= $icons['wechatpay'];
+		$icons_str .= $icons['paypal'];
 
 		return apply_filters('woocommerce_gateway_icon', $icons_str, $this->id);
 	}
@@ -52,7 +52,7 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
 	 * Initialize Gateway Settings Form Fields.
 	 */
 	public function init_form_fields() {
-		$this->form_fields = require(WC_YUANSFER_PLUGIN_PATH . '/includes/admin/yuansfer-wechatpay-settings.php');
+		$this->form_fields = require(WC_YUANSFER_PLUGIN_PATH . '/includes/admin/yuansfer-paypal-settings.php');
 	}
 
 	/**
@@ -74,7 +74,7 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
 		}
 
 		echo '<div
-			id="yuansfer-wechatpay-payment-data"
+			id="yuansfer-paypal-payment-data"
 			data-amount="' . esc_attr(WC_Yuansfer_Helper::get_yuansfer_amount($total)) . '"
 			data-currency="' . esc_attr(strtolower(get_woocommerce_currency())) . '">';
 
@@ -84,6 +84,12 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
 
 		echo '</div>';
 	}
+
+    public function get_supported_currency() {
+        return apply_filters('wc_yuansfer_supported_currencies', array(
+            'USD'
+        ));
+    }
 
 	/**
 	 * Creates the source for charge.
@@ -104,29 +110,25 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
         $currency = strtoupper($currency);
         $supportedCurrency = $this->get_supported_currency();
         if (!in_array($currency, $supportedCurrency, true)) {
-            throw new WC_Yuansfer_Exception('WeChat Pay only support "' . implode('", "', $supportedCurrency). '" for currency');
+            throw new WC_Yuansfer_Exception('PayPal only support "' . implode('", "', $supportedCurrency). '" for currency');
         }
 
         $post_data['amount']      = WC_Yuansfer_Helper::get_yuansfer_amount($order->get_total(), $currency);
         $post_data['currency']    = $currency;
         $post_data['settleCurrency'] = 'USD';
-        $post_data['vendor']      = 'wechatpay';
-        $post_data['reference']   = $order_id . ':' . uniqid('wechatpay:');
+        $post_data['vendor']      = 'paypal';
+        $post_data['reference']   = $order_id . ':' . uniqid('paypal:');
         $post_data['ipnUrl']      = WC_Yuansfer_Helper::get_webhook_url();
         $post_data['callbackUrl'] = $return_url;
-        $post_data['terminal']    = $this->get_terminal(true);
-
-        if ($post_data['terminal'] === 'WAP' || $post_data['terminal'] === 'MWEB') {
-            $post_data['osType'] = $this->detect->is('iOS') ? 'IOS' : 'ANDROID';
-        }
+        $post_data['terminal']    = $this->get_terminal();
 
         if (!empty($this->statement_descriptor)) {
             $post_data['description'] = WC_Yuansfer_Helper::clean_statement_descriptor($this->statement_descriptor);
         }
 
-        WC_Yuansfer_Logger::log('Info: Begin creating WeChat Pay source');
+        WC_Yuansfer_Logger::log('Info: Begin creating PayPal source');
 
-        return WC_Yuansfer_API::request(apply_filters('wc_yuansfer_wechatpay_source', $post_data, $order), WC_Yuansfer_API::SECURE_PAY);
+        return WC_Yuansfer_API::request(apply_filters('wc_yuansfer_paypal_source', $post_data, $order), WC_Yuansfer_API::SECURE_PAY);
     }
 
 	/**
@@ -155,7 +157,7 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
                 throw new WC_Yuansfer_Exception($response->ret_msg);
             }
 
-            WC_Yuansfer_Logger::log('Info: Redirecting to Wechat Pay...');
+            WC_Yuansfer_Logger::log('Info: Redirecting to PayPal...');
 
             return array(
                 'result'   => 'success',

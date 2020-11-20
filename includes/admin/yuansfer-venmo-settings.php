@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-return apply_filters('wc_yuansfer_wechatpay_settings',
+return apply_filters('wc_yuansfer_venmo_settings',
 	array(
 		'geo_target' => array(
 			'description' => __('Relevant Payer Geography: China', 'woocommerce-yuansfer'),
@@ -15,7 +15,7 @@ return apply_filters('wc_yuansfer_wechatpay_settings',
 		),
 		'enabled' => array(
 			'title'       => __('Enable/Disable', 'woocommerce-yuansfer'),
-			'label'       => __('Enable WeChat Pay via Yuansfer', 'woocommerce-yuansfer'),
+			'label'       => __('Enable Venmo via Yuansfer', 'woocommerce-yuansfer'),
 			'type'        => 'checkbox',
 			'description' => '',
 			'default'     => 'no',
@@ -24,14 +24,14 @@ return apply_filters('wc_yuansfer_wechatpay_settings',
 			'title'       => __('Title', 'woocommerce-yuansfer'),
 			'type'        => 'text',
 			'description' => __('This controls the title which the user sees during checkout.', 'woocommerce-yuansfer'),
-			'default'     => __('WeChat Pay (Yuansfer)', 'woocommerce-yuansfer'),
+			'default'     => __('Venmo (Yuansfer)', 'woocommerce-yuansfer'),
 			'desc_tip'    => true,
 		),
 		'description' => array(
 			'title'       => __('Description', 'woocommerce-yuansfer'),
 			'type'        => 'text',
 			'description' => __('This controls the description which the user sees during checkout.', 'woocommerce-yuansfer'),
-			'default'     => __('Pay with WeChat Pay via Yuansfer.', 'woocommerce-yuansfer'),
+			'default'     => __('Pay with Venmo via Yuansfer.', 'woocommerce-yuansfer'),
 			'desc_tip'    => true,
 		),
 	)
