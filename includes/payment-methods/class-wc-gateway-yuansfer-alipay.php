@@ -114,7 +114,7 @@ class WC_Gateway_Yuansfer_Alipay extends WC_Yuansfer_Payment_Gateway {
 		$post_data['storeNo']     = $this->store_no;
 		$currency = strtoupper($currency);
         $supportedCurrency = $this->get_supported_currency();
-        if (in_array($currency, $supportedCurrency, true)) {
+        if (!in_array($currency, $supportedCurrency, true)) {
             throw new WC_Yuansfer_Exception('Alipay only support "' . implode('", "', $supportedCurrency). '" for currency');
         }
 
