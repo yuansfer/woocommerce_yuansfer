@@ -6,7 +6,7 @@ Tags: yuansfer, payment request, unionpay, alipay, wechat pay, credit card, payp
 Requires at least: 4.4
 Tested up to: 5.4
 Requires PHP: 5.6
-Stable tag: 3.0.0
+Stable tag: 3.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Attributions: yuansfer-team
@@ -100,6 +100,13 @@ support@Yuansfer.com
 5. Using the Yuansfer checkout modal.
 
 == Changelog ==
+
+= 3.0.2 - 2020-12-20 =
+* Fix creditcard currency check error
+* Remove the code for woocommerce < 3.0 compatibility 
+
+= 3.0.1 - 2020-12-19 =
+* Fix alipay currency check error
 
 = 3.0.0 - 2020-11-07 =
 * Update to v3 API
