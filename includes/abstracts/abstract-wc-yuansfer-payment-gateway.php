@@ -828,7 +828,7 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 	public function process_refund($order_id, $amount = null, $reason = '') {
 		$order = wc_get_order($order_id);
 
-		if (!$order || !$order->get_transaction_id()) {
+		if (!$order || !($reference = $order->get_meta('_yuansfer_reference', true))) {
 			return false;
 		}
 
@@ -836,20 +836,41 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 
         $request['merchantNo'] = $this->merchant_no;
         $request['storeNo'] = $this->store_no;
+		$request['reference'] = $reference;
 
-		$request['reference'] = $order->get_meta('_yuansfer_reference', true);
 		$currency = $order->get_currency();
         if (!$currency) {
             $currency = get_woocommerce_currency();
-        }
-        $request['currency'] = $currency;
+		}
+
+		$settleCurrency = $order->get_meta('_yuansfer_settle_currency', true);
+		if (!$settleCurrency) {
+			if (strpos($reference, 'alipay') !== false) {
+				if ($currency === 'GBP') {
+					$settleCurrency = 'GBP';
+				} elseif ($currency === 'CNY') {
+					$settleCurrency = $this->get_option('settle_currency');
+					if (!in_array($settleCurrency, array('USD', 'GBP'), true)) {
+						$settleCurrency = 'USD';
+					}
+					
+				} else {
+					$settleCurrency = 'USD';
+				}
+			} else {
+				$settleCurrency = 'USD';
+			}
+		}
+
+		$request['currency'] = $currency;
+		$request['settleCurrency'] = $settleCurrency;
 
 		if (is_null($amount)) {
 			$amount = $order->get_total();
 		}
         $request['refundAmount'] = WC_Yuansfer_Helper::get_yuansfer_amount($amount, $currency);
 
-		WC_Yuansfer_Logger::log("Info: Beginning refund for order {$order->get_transaction_id()} for the amount of {$amount}");
+		WC_Yuansfer_Logger::log("Info: Beginning refund for order {$reference} for the amount of {$amount}");
 
 		$request = apply_filters('wc_yuansfer_refund_request', $request, $order);
 
@@ -861,8 +882,8 @@ abstract class WC_Yuansfer_Payment_Gateway extends WC_Payment_Gateway {
 			return false;
 		}
 
-		if (!empty($response->result->refundTransactionId)) {
-		    $newId = $response->result->refundTransactionId;
+		if (!empty($response->result->refundTransactionNo)) {
+		    $newId = $response->result->refundTransactionNo;
 			$order->update_meta_data('_yuansfer_refund_id', $newId);
 
 			/* translators: 1) dollar amount 2) transaction id 3) refund message */

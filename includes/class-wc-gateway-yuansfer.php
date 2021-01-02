@@ -198,7 +198,10 @@ class WC_Gateway_Yuansfer extends WC_Yuansfer_Payment_Gateway {
 
         if (!empty($this->statement_descriptor)) {
             $post_data['description'] = WC_Yuansfer_Helper::clean_statement_descriptor($this->statement_descriptor);
-        }
+		}
+		
+		// $order->update_meta_data('_yuansfer_settle_currency', $post_data['settleCurrency']);
+		// $order->save();
 
         WC_Yuansfer_Logger::log('Info: Begin creating UnionPay source');
 

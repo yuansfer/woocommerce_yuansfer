@@ -126,6 +126,9 @@ class WC_Gateway_Yuansfer_Venmo extends WC_Yuansfer_Payment_Gateway {
             $post_data['description'] = WC_Yuansfer_Helper::clean_statement_descriptor($this->statement_descriptor);
         }
 
+		// $order->update_meta_data('_yuansfer_settle_currency', $post_data['settleCurrency']);
+		// $order->save();
+
         WC_Yuansfer_Logger::log('Info: Begin creating Venmo source');
 
         return WC_Yuansfer_API::request(apply_filters('wc_yuansfer_venmo_source', $post_data, $order), WC_Yuansfer_API::SECURE_PAY);
