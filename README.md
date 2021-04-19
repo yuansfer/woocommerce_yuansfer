@@ -100,6 +100,7 @@ support@Yuansfer.com
 5. Using the Yuansfer checkout modal.
 
 == Changelog ==
+
 = 3.0.4 - 2021-04-19 =
 * Added support for WordPress v5.7
 * Fix bug on Braintree failure payment
