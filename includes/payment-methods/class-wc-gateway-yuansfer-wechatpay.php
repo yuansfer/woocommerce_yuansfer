@@ -92,6 +92,9 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
 	 * @return mixed
 	 */
     public function create_source($order) {
+		if($order->has_status(array('failed'))) {
+			$order->update_status('pending',"Initialize new Yuansfer Payment");
+		}
         $currency                 = $order->get_currency();
         if (!$currency) {
             $currency = get_woocommerce_currency();
@@ -123,7 +126,7 @@ class WC_Gateway_Yuansfer_Wechatpay extends WC_Yuansfer_Payment_Gateway {
         if (!empty($this->statement_descriptor)) {
             $post_data['description'] = WC_Yuansfer_Helper::clean_statement_descriptor($this->statement_descriptor);
 		}
-		
+
 		// $order->update_meta_data('_yuansfer_settle_currency', $post_data['settleCurrency']);
 		// $order->save();
 

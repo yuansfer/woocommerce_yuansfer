@@ -101,6 +101,9 @@ class WC_Gateway_Yuansfer_Creditcard extends WC_Yuansfer_Payment_Gateway {
 	 * @return mixed
 	 */
     public function create_source($order) {
+		if($order->has_status(array('failed'))) {
+			$order->update_status('pending',"Initialize new Yuansfer Payment");
+		}
         $currency                 = $order->get_currency();
         if (!$currency) {
             $currency = get_woocommerce_currency();
