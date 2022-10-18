@@ -100,6 +100,7 @@ support@Yuansfer.com
 5. Using the Yuansfer checkout modal.
 
 == Changelog ==
+
 = 3.0.5 - 2022-10-18 =
 * Added support for WordPress v6.0.2
 
