@@ -4,7 +4,7 @@
 Contributors: yuansfer
 Tags: yuansfer, payment request, unionpay, alipay, wechat pay, credit card, paypal, venmo, woocommerce, automattic
 Requires at least: 4.4
-Tested up to: 5.7
+Tested up to: 6.0.2
 Requires PHP: 5.6
 Stable tag: 3.0.4
 License: GPLv3
