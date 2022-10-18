@@ -4,7 +4,7 @@
 Contributors: yuansfer
 Tags: yuansfer, payment request, unionpay, alipay, wechat pay, credit card, paypal, venmo, woocommerce, automattic
 Requires at least: 4.4
-Tested up to: 6.0.2
+Tested up to: 6.0.3
 Requires PHP: 5.6
 Stable tag: 3.0.6
 License: GPLv3
@@ -102,7 +102,7 @@ support@Yuansfer.com
 == Changelog ==
 
 = 3.0.6 - 2022-10-18 =
-* Added support for WordPress v6.0.2
+* Added support for WordPress v6.0.3
 
 = 3.0.5 - 2021-07-29 =
 * Change credit card logo
