@@ -5,9 +5,9 @@
  * Description: Provides a Yuansfer Payment Gateway
  * Author: Yuansfer
  * Author URI: https://www.yuansfer.com/
- * Version: 3.0.4
+ * Version: 3.0.6
  * WC requires at least: 3.0
- * WC tested up to: 4.3
+ * WC tested up to: 6.0.3
  */
 
 if (!defined('ABSPATH')) {
